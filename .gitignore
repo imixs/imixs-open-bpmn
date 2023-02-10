@@ -1,3 +1,9 @@
+# ignore eclipse directories and project files
+.settings/
+.project
+.classpath
+
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
