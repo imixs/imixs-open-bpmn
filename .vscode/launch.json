@@ -6,10 +6,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Imixs Open BPMN GLSP Server",
+      "name": "Imixs Open BPMN - Server",
       "request": "launch",
       "mainClass": "org.imixs.openbpmn.ImixsBPMNServerLauncher",
-      "projectName": "open-bpmn-imixs.server",
+      "projectName": "imixs-open-bpmn.server",
       "args": [
         "--port",
         "5007"

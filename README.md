@@ -1,2 +1,3 @@
-# open-bpmn-imixs
-Open-BPMN - Imixs-Workflow Extension
+# Imixs Open BPMN
+
+The Imixs Open-BPMN - Extension
