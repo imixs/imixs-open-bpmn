@@ -17,7 +17,6 @@ package org.imixs.openbpmn;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.json.JsonObject;
@@ -25,7 +24,6 @@ import javax.json.JsonObject;
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNTypes;
 import org.openbpmn.bpmn.elements.Activity;
-import org.openbpmn.bpmn.elements.Event;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
 import org.openbpmn.extension.BPMNExtension;
 import org.openbpmn.glsp.jsonforms.DataBuilder;
@@ -49,12 +47,12 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
 
     @Override
     public String getNamespace() {
-        return "imixs";
+        return ImixsExtensionUtil.getNamespace();
     }
- 
+
     @Override
     public String getNamespaceURI() {
-        return "http://www.imixs.org/bpmn2";
+        return ImixsExtensionUtil.getNamespaceURI();
     }
 
     @Override
@@ -62,13 +60,17 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
         return "Imixs-Workflow";
     }
 
+    @Override
+    public int getPriority() {
+        return 101;
+    }
+
     /**
      * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
      */
     @Override
     public boolean handlesElementTypeId(final String elementTypeId) {
-        return (BPMNTypes.CATCH_EVENT.equals(elementTypeId) //
-                || BPMNTypes.TASK.equals(elementTypeId));
+        return BPMNTypes.TASK.equals(elementTypeId);
     }
 
     /**
@@ -89,15 +91,15 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
                 }
             }
         }
-        if (bpmnElement instanceof Event) {
-            Event event = (Event) bpmnElement;
-            if (event.getType().equals(BPMNTypes.CATCH_EVENT)) {
-                // next check the extension attribute imixs:processid
-                if (event.hasAttribute(getNamespace() + ":activityid")) {
-                    return true;
-                }
-            }
-        }
+        // if (bpmnElement instanceof Event) {
+        // Event event = (Event) bpmnElement;
+        // if (event.getType().equals(BPMNTypes.CATCH_EVENT)) {
+        // // next check the extension attribute imixs:processid
+        // if (event.hasAttribute(getNamespace() + ":activityid")) {
+        // return true;
+        // }
+        // }
+        // }
         return false;
     }
 
@@ -108,11 +110,12 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
     public void addExtension(final BPMNElement bpmnElement) {
         if (bpmnElement instanceof Activity) {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
+
         }
 
-        if (bpmnElement instanceof Event) {
-            bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
-        }
+        // if (bpmnElement instanceof Event) {
+        // bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
+        // }
     }
 
     /**
@@ -125,22 +128,49 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
             final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
 
         dataBuilder //
-                .addData("form", "blub") //
-                .addData("abstract", "exec") //
-                .addData("summary", "some test docu");
+
+                .addData("processid", bpmnElement.getExtensionAttribute(getNamespace(), "processid")) //
+                .addData("txttype", ImixsExtensionUtil.getItemValueString(bpmnElement, "txttype")) //
+                .addData("txtimageurl", ImixsExtensionUtil.getItemValueString(bpmnElement, "txtimageurl")) //
+                .addData("txteditorid", ImixsExtensionUtil.getItemValueString(bpmnElement, "txteditorid")) //
+                .addData("form.definition", ImixsExtensionUtil.getItemValueString(bpmnElement, "form.definition")) //
+                .addData("txtworkflowsummary", ImixsExtensionUtil.getItemValueString(bpmnElement, "txtworkflowsummary")) //
+                .addData("txtworkflowabstract",
+                        ImixsExtensionUtil.getItemValueString(bpmnElement, "txtworkflowabstract"));
 
         schemaBuilder. //
-                addProperty("form", "string", null). //
-                addProperty("abstract", "string", null). //
-                addProperty("summary", "string", null);
+                addProperty("processid", "string", null). //
+                addProperty("txteditorid", "string",
+                        "The 'Form ID' defines an application form element to be displayed within this task.")
+                . //
+                addProperty("txttype", "string", null). //
+                addProperty("txtimageurl", "string", null). //
+                addProperty("form.definition", "string",
+                        "An optional 'Form Definition' describe custom form sections and elements.")
+                . //
+                addProperty("txtworkflowsummary", "string", null). //
+                addProperty("txtworkflowabstract", "string", null);
 
         Map<String, String> multilineOption = new HashMap<>();
         multilineOption.put("multi", "true");
-        uiSchemaBuilder. //
 
+        /***********
+         * UISchema
+         */
+        uiSchemaBuilder. //
                 addCategory("Workflow"). //
+                addLayout(Layout.HORIZONTAL). //
+                addElement("processid", "Process ID", null). //
+                addElement("txttype", "Type", null). //
+                addElement("txtimageurl", "Symbol", null). //
+                addLayout(Layout.HORIZONTAL). //
+
                 addLayout(Layout.VERTICAL). //
-                addElements("form", "abstract", "summary");
+                addElement("txtworkflowsummary", "Summary", null). //
+                addElement("txtworkflowabstract", "Abstract", multilineOption). //
+                addCategory("App"). //
+                addElement("txteditorid", "Input Form ID", null). //
+                addElement("form.definition", "Input Form Definition", multilineOption);
 
     }
 
@@ -148,18 +178,17 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
     public void updatePropertiesData(final JsonObject json, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
-        // check custom features
-        Set<String> features = json.keySet();
-        String value = null;
-        for (String feature : features) {
-            value = json.getString(feature);
-
-            logger.fine("...update feature = " + feature);
-
-            // TODO implement Event features
-        }
+        bpmnElement.setExtensionAttribute(getNamespace(), "processid", json.getString("processid", "0"));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "txttype", "xs:string", json.getString("txttype", ""));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "txtimageurl", "xs:string", json.getString("txtimageurl", ""));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "txtworkflowsummary", "xs:string",
+                json.getString("txtworkflowsummary", ""));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "txtworkflowabstract", "xs:string",
+                json.getString("txtworkflowabstract", ""));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "txteditorid", "xs:string", json.getString("txteditorid", ""));
+        ImixsExtensionUtil.setItemValue(bpmnElement, "form.definition", "xs:string",
+                json.getString("form.definition", ""));
 
     }
-
 
 }

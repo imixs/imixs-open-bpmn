@@ -98,16 +98,13 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<dependencies>
-
-
 		<!-- Open BPMN GLSP Server -->
 		<dependency>
 			<groupId>org.imixs.bpmn</groupId>
 			<artifactId>open-bpmn.server</artifactId>
-			<version>0.8.1-SNAPSHOT</version>
-
+			<version>0.9.1-SNAPSHOT</version>
 		</dependency>
-
 	</dependencies>
 </project>
