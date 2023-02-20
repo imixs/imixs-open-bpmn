@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.BPMNNS;
-import org.openbpmn.bpmn.elements.core.BPMNElement;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,16 +53,17 @@ public class ImixsExtensionUtil {
      * @param type
      * @param value
      */
-    public static void setItemValue(final BPMNElement bpmnElement, final String itemName, final String type,
+    public static void setItemValue(final BPMNModel model, final Element elementNode, final String itemName,
+            final String type,
             final String value) {
 
-        Element extensionElement = bpmnElement.getModel().findChildNodeByName(bpmnElement.getElementNode(),
+        Element extensionElement = model.findChildNodeByName(elementNode,
                 BPMNNS.BPMN2, "extensionElements");
 
         boolean isNew = false;
         // if no extensionElement exists we create one
         if (extensionElement == null) {
-            extensionElement = bpmnElement.getModel().createElement(BPMNNS.BPMN2, "extensionElements");
+            extensionElement = model.createElement(BPMNNS.BPMN2, "extensionElements");
             isNew = true;
 
             // reload
@@ -84,7 +85,7 @@ public class ImixsExtensionUtil {
             // we only create one if a value is given
             if (value != null && !value.isEmpty()) {
                 // <imixs:item name="user.name" type="xs:string">John</imixs:item>
-                item = bpmnElement.getModel().getDoc().createElementNS(getNamespaceURI(), getNamespace() + ":item");
+                item = model.getDoc().createElementNS(getNamespaceURI(), getNamespace() + ":item");
                 extensionElement.appendChild(item);
             }
         }
@@ -99,7 +100,7 @@ public class ImixsExtensionUtil {
 
         if (isNew) {
             // lazy creation
-            bpmnElement.getElementNode().appendChild(extensionElement);
+            elementNode.appendChild(extensionElement);
         }
     }
 
@@ -112,9 +113,8 @@ public class ImixsExtensionUtil {
      * @param itemName
      * @return the itemValue list.
      */
-    public static List<String> getItemValueList(final BPMNElement bpmnElement, String itemName) {
-        Element extensionElement = bpmnElement.getModel().findChildNodeByName(bpmnElement.getElementNode(),
-                BPMNNS.BPMN2, "extensionElements");
+    public static List<String> getItemValueList(final BPMNModel model, final Element elementNode, String itemName) {
+        Element extensionElement = model.findChildNodeByName(elementNode, BPMNNS.BPMN2, "extensionElements");
 
         List<String> result = new ArrayList<>();
         if (extensionElement != null) {
@@ -157,8 +157,8 @@ public class ImixsExtensionUtil {
      * @param itemName
      * @return string value of the first imixs:value in a imixs:item
      */
-    public static String getItemValueString(final BPMNElement bpmnElement, String itemName) {
-        List<String> valueList = getItemValueList(bpmnElement, itemName);
+    public static String getItemValueString(final BPMNModel model, final Element elementNode, String itemName) {
+        List<String> valueList = getItemValueList(model, elementNode, itemName);
         if (valueList != null && valueList.size() > 0) {
             return valueList.get(0);
         }

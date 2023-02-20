@@ -22,14 +22,15 @@ import java.util.logging.Logger;
 import javax.json.JsonObject;
 
 import org.eclipse.glsp.graph.GModelElement;
+import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.BPMNTypes;
 import org.openbpmn.bpmn.elements.Activity;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
-import org.openbpmn.extension.BPMNExtension;
 import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
+import org.w3c.dom.Element;
 
 /**
  * This is the Default BPMNEvent extension providing the JSONForms shemata.
@@ -37,27 +38,12 @@ import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
  * @author rsoika
  *
  */
-public class ImixsBPMNTaskExtension implements BPMNExtension {
+public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
     public ImixsBPMNTaskExtension() {
         super();
-    }
-
-    @Override
-    public String getNamespace() {
-        return ImixsExtensionUtil.getNamespace();
-    }
-
-    @Override
-    public String getNamespaceURI() {
-        return ImixsExtensionUtil.getNamespaceURI();
-    }
-
-    @Override
-    public String getLabel() {
-        return "Imixs-Workflow";
     }
 
     @Override
@@ -127,16 +113,20 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
     public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
             final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
 
+        BPMNModel model = bpmnElement.getModel();
+        Element elementNode = bpmnElement.getElementNode();
         dataBuilder //
 
                 .addData("processid", bpmnElement.getExtensionAttribute(getNamespace(), "processid")) //
-                .addData("txttype", ImixsExtensionUtil.getItemValueString(bpmnElement, "txttype")) //
-                .addData("txtimageurl", ImixsExtensionUtil.getItemValueString(bpmnElement, "txtimageurl")) //
-                .addData("txteditorid", ImixsExtensionUtil.getItemValueString(bpmnElement, "txteditorid")) //
-                .addData("form.definition", ImixsExtensionUtil.getItemValueString(bpmnElement, "form.definition")) //
-                .addData("txtworkflowsummary", ImixsExtensionUtil.getItemValueString(bpmnElement, "txtworkflowsummary")) //
+                .addData("txttype", ImixsExtensionUtil.getItemValueString(model, elementNode, "txttype")) //
+                .addData("txtimageurl", ImixsExtensionUtil.getItemValueString(model, elementNode, "txtimageurl")) //
+                .addData("txteditorid", ImixsExtensionUtil.getItemValueString(model, elementNode, "txteditorid")) //
+                .addData("form.definition",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "form.definition")) //
+                .addData("txtworkflowsummary",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtworkflowsummary")) //
                 .addData("txtworkflowabstract",
-                        ImixsExtensionUtil.getItemValueString(bpmnElement, "txtworkflowabstract"));
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtworkflowabstract"));
 
         schemaBuilder. //
                 addProperty("processid", "string", null). //
@@ -178,15 +168,20 @@ public class ImixsBPMNTaskExtension implements BPMNExtension {
     public void updatePropertiesData(final JsonObject json, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
+        BPMNModel model = bpmnElement.getModel();
+        Element elementNode = bpmnElement.getElementNode();
+
         bpmnElement.setExtensionAttribute(getNamespace(), "processid", json.getString("processid", "0"));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "txttype", "xs:string", json.getString("txttype", ""));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "txtimageurl", "xs:string", json.getString("txtimageurl", ""));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "txtworkflowsummary", "xs:string",
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string", json.getString("txttype", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
+                json.getString("txtimageurl", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowsummary", "xs:string",
                 json.getString("txtworkflowsummary", ""));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "txtworkflowabstract", "xs:string",
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowabstract", "xs:string",
                 json.getString("txtworkflowabstract", ""));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "txteditorid", "xs:string", json.getString("txteditorid", ""));
-        ImixsExtensionUtil.setItemValue(bpmnElement, "form.definition", "xs:string",
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txteditorid", "xs:string",
+                json.getString("txteditorid", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "form.definition", "xs:string",
                 json.getString("form.definition", ""));
 
     }

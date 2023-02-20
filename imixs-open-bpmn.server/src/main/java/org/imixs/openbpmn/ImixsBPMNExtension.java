@@ -17,34 +17,42 @@ package org.imixs.openbpmn;
 
 import java.util.logging.Logger;
 
+import org.openbpmn.bpmn.elements.core.BPMNElement;
 import org.openbpmn.extension.BPMNExtension;
-import org.openbpmn.glsp.BPMNDiagramModule;
-
-import com.google.inject.multibindings.Multibinder;
 
 /**
- * The DiagramModule contains the bindings in dedicated methods. Imixs BPMN
- * extends this module and customize it by overriding dedicated binding methods.
- *
+ * This is the Default BPMNEvent extension providing the JSONForms shemata.
  *
  * @author rsoika
  *
  */
-public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
-    @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(ImixsBPMNDiagramModule.class.getName());
+public abstract class ImixsBPMNExtension implements BPMNExtension {
+
+    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+
+    public ImixsBPMNExtension() {
+        super();
+    }
+
+    @Override
+    public String getNamespace() {
+        return ImixsExtensionUtil.getNamespace();
+    }
+
+    @Override
+    public String getNamespaceURI() {
+        return ImixsExtensionUtil.getNamespaceURI();
+    }
+
+    @Override
+    public String getLabel() {
+        return "Imixs-Workflow";
+    }
 
     /**
-     * This method adds the custom Imixs BPMN Extensions
-     *
-     * @param binding
+     * This method adds a unique identifier to the corresponding BPMNElement
      */
-    public void configureBPMNExtensions(final Multibinder<BPMNExtension> binding) {
-        // bind BPMN default extensions
-        super.configureBPMNExtensions(binding);
-
-        // Imixs Extensions (just for testing)
-        binding.addBinding().to(ImixsBPMNDefinitionsExtension.class);
-        binding.addBinding().to(ImixsBPMNTaskExtension.class);
+    @Override
+    public void addExtension(final BPMNElement bpmnElement) {
     }
 }
