@@ -21,15 +21,18 @@ import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 
+import org.eclipse.glsp.graph.GLabel;
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.BPMNTypes;
 import org.openbpmn.bpmn.elements.Activity;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
+import org.openbpmn.glsp.bpmn.BPMNGNode;
 import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
+import org.openbpmn.glsp.utils.BPMNGraphUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -180,6 +183,10 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
 
         }
 
+        /**
+         * This method updates the BPMN properties and also the imixs processid.
+         * The processID is also updated for the frontend.
+         */
         @Override
         public void updatePropertiesData(final JsonObject json, final BPMNElement bpmnElement,
                         final GModelElement gNodeElement) {
@@ -187,7 +194,18 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
                 BPMNModel model = bpmnElement.getModel();
                 Element elementNode = bpmnElement.getElementNode();
 
-                bpmnElement.setExtensionAttribute(getNamespace(), "processid", json.getString("processid", "0"));
+                String oldTaskId = bpmnElement.getExtensionAttribute(getNamespace(), "processid");
+                String newTaskId = json.getString("processid", "0");
+                if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
+                        bpmnElement.setExtensionAttribute(getNamespace(), "processid",
+                                        json.getString("processid", "0"));
+                        // update gNode...
+                        GLabel label = BPMNGraphUtil.findExtensionLabel((BPMNGNode) gNodeElement);
+                        if (label != null) {
+                                label.setText("ID: " + newTaskId);
+                        }
+                }
+
                 ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
                                 json.getString("txttype", ""));
                 ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
