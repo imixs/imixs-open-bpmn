@@ -89,35 +89,21 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
                                 "txtworkflowmodelversion"));
 
         // add Date Objects
-        List<String> dateobjects = ImixsExtensionUtil.getItemValueList(model, elementNode,
-                "txttimefieldmapping");
+        ImixsItemNameMapper timeFieldMapper = new ImixsItemNameMapper(model, "txttimefieldmapping");
         dataBuilder.addArray("dateobjects");
-        for (String _date : dateobjects) {
+        for (int i = 0; i < timeFieldMapper.values.size(); i++) {
             dataBuilder.addObject();
-            String[] dateParts = _date.split("\\|");
-            if (dateParts.length > 1) {
-                dataBuilder.addData("date", dateParts[0].trim());
-                dataBuilder.addData("item", dateParts[1].trim());
-            } else {
-                dataBuilder.addData("item", _date.trim());
-            }
-
+            dataBuilder.addData("date", timeFieldMapper.labels.get(i));
+            dataBuilder.addData("item", timeFieldMapper.values.get(i));
         }
         dataBuilder.closeArrayBuilder();
 
         // add Field Mapping
-        List<String> actors = ImixsExtensionUtil.getItemValueList(model, elementNode, "txtfieldmapping");
-        dataBuilder.addArray("actors");
-        for (String _actor : actors) {
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
+        for (int i = 0; i < actorFieldMapper.values.size(); i++) {
             dataBuilder.addObject();
-            String[] actorParts = _actor.split("\\|");
-            if (actorParts.length > 1) {
-                dataBuilder.addData("actor", actorParts[0].trim());
-                dataBuilder.addData("item", actorParts[1].trim());
-            } else {
-                dataBuilder.addData("item", _actor.trim());
-            }
-
+            dataBuilder.addData("actor", actorFieldMapper.labels.get(i));
+            dataBuilder.addData("item", actorFieldMapper.values.get(i));
         }
         dataBuilder.closeArrayBuilder();
 

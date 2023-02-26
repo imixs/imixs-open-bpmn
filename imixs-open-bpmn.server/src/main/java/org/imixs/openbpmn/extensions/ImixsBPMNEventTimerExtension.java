@@ -100,8 +100,6 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         dataBuilder //
                 .addData("txtscheduledview",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "txtscheduledview")) //
-                .addData("keytimecomparefield",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keytimecomparefield")) //
                 .addData("numactivitydelay",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "numactivitydelay"));
 
@@ -150,16 +148,22 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         }
         dataBuilder.addData("keyactivitydelayunit", keyUnit); //
 
+        // resolve Item References and set the label as the value...
+        ImixsItemNameMapper itemTimeMapping = new ImixsItemNameMapper(model, "txttimefieldmapping");
+        String refTimeItem = ImixsExtensionUtil.getItemValueString(model, elementNode, "keytimecomparefield");
+        dataBuilder.addData("keytimecomparefield", itemTimeMapping.resolveLabel(refTimeItem)); //
+
         /***********
          * Schema
          */
         String[] enabledOption = { "Yes", "No" };
         String[] refOption = { "Last Event", "Last Modified", "Creation Date", "Reference" };
         String[] keyUnits = { "Minutes", "Hours", "Days", "Workdays" };
+        String[] timeFields = itemTimeMapping.getLabelsArray();
         schemaBuilder //
                 .addProperty("txtscheduledview", "string", "") //
                 .addProperty("keyscheduledbaseobject", "string", "", refOption) //
-                .addProperty("keytimecomparefield", "string", "") //
+                .addProperty("keytimecomparefield", "string", "", timeFields) //
                 .addProperty("numactivitydelay", "string", "") //
                 .addProperty("keyactivitydelayunit", "string", "", keyUnits) //
                 .addProperty("keyscheduledactivity", "string", "", enabledOption);
@@ -179,7 +183,7 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
                 .addElement("keyactivitydelayunit", "Unit", comboOption)
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("keyscheduledbaseobject", "Time Base Object", radioOption) //
-                .addElement("keytimecomparefield", "Item Reference", null) //
+                .addElement("keytimecomparefield", "Item Reference", comboOption) //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("txtscheduledview", "Selection", null);
     }
@@ -200,8 +204,7 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         Element elementNode = bpmnElement.getElementNode();
 
         // base settings
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keytimecomparefield", "xs:string",
-                json.getString("keytimecomparefield", ""));
+
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtscheduledview", "xs:string",
                 json.getString("txtscheduledview", ""));
         ImixsExtensionUtil.setItemValue(model, elementNode, "numactivitydelay", "xs:string",
@@ -251,6 +254,11 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
                 break;
         }
         ImixsExtensionUtil.setItemValue(model, elementNode, "keyactivitydelayunit", "xs:string", keyDelayUnit);
+
+        // set timeCompare field
+        ImixsItemNameMapper timeFieldMapper = new ImixsItemNameMapper(model, "txttimefieldmapping");
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keytimecomparefield", "xs:string",
+                timeFieldMapper.resolveValue(json.getString("keytimecomparefield", "")));
 
     }
 
