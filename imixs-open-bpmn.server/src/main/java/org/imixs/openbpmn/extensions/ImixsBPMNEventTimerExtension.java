@@ -83,6 +83,9 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
      * This Helper Method generates a JSON Object with the BPMNElement properties.
      * <p>
      * This json object is used on the GLSP Client to generate the EMF JsonForms
+     * <p>
+     * keyscheduledactivity, txtscheduledview, numactivitydelay
+     * ,"keyscheduledbaseobject", keytimecomparefield, keyactivitydelayunit
      */
     @Override
     public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
@@ -93,9 +96,6 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
 
         /***********
          * Data
-         * 
-         * keyscheduledactivity, txtscheduledview, numactivitydelay
-         * ,"keyscheduledbaseobject", keytimecomparefield, keyactivitydelayunit
          */
         dataBuilder //
                 .addData("txtscheduledview",
@@ -172,7 +172,7 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         Map<String, String> comboOption = new HashMap<>();
         comboOption.put("format", "combo");
         uiSchemaBuilder //
-                .addCategory("Timer") //
+                .addCategory("Scheduler") //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("keyscheduledactivity", "Enabled", radioOption)
                 .addElement("numactivitydelay", "Delay", null)
@@ -185,26 +185,73 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
     }
 
     /**
-     * This method updates the BPMN properties and also the imixs processid.
-     * The processID is also updated for the frontend.
+     * This method updates the BPMN properties
      */
     @Override
     public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"Timer".equals(category)) {
+        if (!"Scheduler".equals(category)) {
             return;
         }
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
-        // Rules
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessruleengine", "xs:string",
-                json.getString("txtbusinessruleengine", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessrule", "xs:string",
-                json.getString("txtbusinessrule", ""));
+        // base settings
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keytimecomparefield", "xs:string",
+                json.getString("keytimecomparefield", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtscheduledview", "xs:string",
+                json.getString("txtscheduledview", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "numactivitydelay", "xs:string",
+                json.getString("numactivitydelay", ""));
+
+        // set enabled yes|no
+        String keyEnabled = json.getString("keyscheduledactivity", "Yes");
+        if ("Yes".equals(keyEnabled)) {
+            keyEnabled = "1";
+        } else {
+            keyEnabled = "0";
+        }
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string", keyEnabled);
+
+        // set keyscheduledbaseobject
+        String keyBaseObject = json.getString("keyscheduledbaseobject", "");
+        switch (keyBaseObject) {
+            case "Reference":
+                keyBaseObject = "4";
+                break;
+            case "Creation Date":
+                keyBaseObject = "3";
+                break;
+            case "Last Modified":
+                keyBaseObject = "2";
+                break;
+            default:
+                keyBaseObject = "1";
+                break;
+        }
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledbaseobject", "xs:string", keyBaseObject);
+
+        // set keyactivitydelayunit
+        String keyDelayUnit = json.getString("keyactivitydelayunit", "");
+        switch (keyDelayUnit) {
+            case "Workdays":
+                keyDelayUnit = "4";
+                break;
+            case "Days":
+                keyDelayUnit = "3";
+                break;
+            case "Hours":
+                keyDelayUnit = "2";
+                break;
+            default:
+                keyDelayUnit = "1";
+                break;
+        }
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keyactivitydelayunit", "xs:string", keyDelayUnit);
+
     }
 
 }
