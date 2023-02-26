@@ -106,32 +106,62 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
          * Data
          */
         dataBuilder //
-
                 .addData("activityid", bpmnElement.getExtensionAttribute(getNamespace(), "activityid")) //
-
                 .addData("txtactivityresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                "txtactivityresult")); //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult")) //
+
+                .addData("txtbusinessruleengine",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtbusinessruleengine")) //
+                .addData("txtbusinessrule",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtbusinessrule")) //
+
+                .addData("rtfresultlog",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "rtfresultlog")); //
+
+        // set public result
+        String keyPublicResult = ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult");
+        if ("0".equals(keyPublicResult)) {
+            keyPublicResult = "No";
+        } else {
+            keyPublicResult = "Yes";
+        }
+
+        dataBuilder.addData("keypublicresult", keyPublicResult); //
 
         /***********
          * Schema
          */
-        schemaBuilder. //
-                addProperty("activityid", "string", null). //
-                addProperty("txtactivityresult", "string", "");
 
-        Map<String, String> multilineOption = new HashMap<>();
-        multilineOption.put("multi", "true");
+        String[] publicEventOptions = { "Yes", "No" };
+        schemaBuilder //
+                .addProperty("activityid", "string", null) //
+                .addProperty("txtactivityresult", "string",
+                        "Optional Execution Result. Additional item values can be defined here. ") //
+                .addProperty("txtbusinessruleengine", "string", "") //
+                .addProperty("txtbusinessrule", "string",
+                        "A business rule can also provide an optional result object with new or updated item values. The item values stored in the result object will be applied to the current process instance.") //
+                .addProperty("rtfresultlog", "string", "") //
+                .addProperty("keypublicresult", "string", "Yes", publicEventOptions);
 
         /***********
          * UISchema
          */
-        uiSchemaBuilder. //
-                addCategory("Workflow"). //
-                addLayout(Layout.HORIZONTAL). //
-                addElement("activityid", "Event ID", null). //
-                addElement("txtactivityresult", "Result", multilineOption); //
-        ;
+        Map<String, String> radioOption = new HashMap<>();
+        radioOption.put("format", "radio");
+        Map<String, String> multilineOption = new HashMap<>();
+        multilineOption.put("multi", "true");
+        uiSchemaBuilder //
+                .addCategory("Workflow") //
+                .addLayout(Layout.HORIZONTAL) //
+                .addElement("activityid", "Event ID", null) //
+                .addElement("keypublicresult", "Pubilc Event", radioOption) //
+                .addLayout(Layout.VERTICAL) //
+                .addElement("txtactivityresult", "Workflow Result", multilineOption) //
+                .addCategory("History") //
+                .addElement("rtfresultlog", "Log Entry", multilineOption) //
+                .addCategory("Business Rule") //
+                .addElement("txtbusinessruleengine", "Engine", null) //
+                .addElement("txtbusinessrule", "Rule", multilineOption); //
 
     }
 
@@ -143,8 +173,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
     public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
-        // we are only interested in category Workflow
-        if (!"Workflow".equals(category)) {
+        // we are only interested in category Workflow and History
+        if (!"Workflow".equals(category) && !"History".equals(category) && !"Business Rule".equals(category)) {
             return;
         }
 
@@ -153,10 +183,26 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
         bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
                 json.getString("activityid", "0"));
-
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
                 json.getString("txtactivityresult", ""));
 
+        ImixsExtensionUtil.setItemValue(model, elementNode, "rtfresultlog", "xs:string",
+                json.getString("rtfresultlog", ""));
+
+        String keyPublicResult = json.getString("keypublicresult", "Yes");
+        if ("Yes".equals(keyPublicResult)) {
+            keyPublicResult = "1";
+        } else {
+            keyPublicResult = "0";
+        }
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string", keyPublicResult);
+
+        // Rules
+
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessruleengine", "xs:string",
+                json.getString("txtbusinessruleengine", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessrule", "xs:string",
+                json.getString("txtbusinessrule", ""));
     }
 
 }
