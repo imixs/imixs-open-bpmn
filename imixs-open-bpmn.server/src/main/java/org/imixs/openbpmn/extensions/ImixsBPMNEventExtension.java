@@ -139,7 +139,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                         "Optional Execution Result. Additional item values can be defined here. ") //
                 .addProperty("txtbusinessruleengine", "string", "") //
                 .addProperty("txtbusinessrule", "string",
-                        "A business rule can also provide an optional result object with new or updated item values. The item values stored in the result object will be applied to the current process instance.") //
+                        "A business rule can also provide an optional result object with new or updated item values. " +
+                                "The item values stored in the result object will be applied to the current process instance.") //
                 .addProperty("rtfresultlog", "string", "") //
                 .addProperty("keypublicresult", "string", "Yes", publicEventOptions);
 
