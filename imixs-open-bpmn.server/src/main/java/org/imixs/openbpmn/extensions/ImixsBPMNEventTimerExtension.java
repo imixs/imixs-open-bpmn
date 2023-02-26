@@ -38,17 +38,17 @@ import org.w3c.dom.Element;
  * @author rsoika
  *
  */
-public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
+public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
-    public ImixsBPMNEventExtension() {
+    public ImixsBPMNEventTimerExtension() {
         super();
     }
 
     @Override
     public int getPriority() {
-        return 101;
+        return 103;
     }
 
     /**
@@ -80,17 +80,6 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
     }
 
     /**
-     * This method adds a unique identifier to the corresponding BPMNElement
-     */
-    @Override
-    public void addExtension(final BPMNElement bpmnElement) {
-
-        if (bpmnElement instanceof Event) {
-            bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
-        }
-    }
-
-    /**
      * This Helper Method generates a JSON Object with the BPMNElement properties.
      * <p>
      * This json object is used on the GLSP Client to generate the EMF JsonForms
@@ -104,47 +93,95 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
         /***********
          * Data
+         * 
+         * keyscheduledactivity, txtscheduledview, numactivitydelay
+         * ,"keyscheduledbaseobject", keytimecomparefield, keyactivitydelayunit
          */
         dataBuilder //
-                .addData("activityid", bpmnElement.getExtensionAttribute(getNamespace(), "activityid")) //
-                .addData("txtactivityresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult"));
+                .addData("txtscheduledview",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtscheduledview")) //
+                .addData("keytimecomparefield",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keytimecomparefield")) //
+                .addData("numactivitydelay",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "numactivitydelay"));
 
-        // set public result
-        String keyPublicResult = ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult");
-        if ("0".equals(keyPublicResult)) {
-            keyPublicResult = "No";
+        // set enabled yes|no
+        String keyEnabled = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyscheduledactivity");
+        if ("1".equals(keyEnabled)) {
+            keyEnabled = "Yes";
         } else {
-            keyPublicResult = "Yes";
+            keyEnabled = "No";
         }
-        dataBuilder.addData("keypublicresult", keyPublicResult); //
+        dataBuilder.addData("keyscheduledactivity", keyEnabled); //
+
+        // set keyscheduledbaseobject
+        String keyBaseObject = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyscheduledbaseobject");
+        switch (keyBaseObject) {
+            case "4":
+                keyBaseObject = "Reference";
+                break;
+            case "3":
+                keyBaseObject = "Creation Date";
+                break;
+            case "2":
+                keyBaseObject = "Last Modified";
+                break;
+            default:
+                keyBaseObject = "Last Event";
+                break;
+        }
+        dataBuilder.addData("keyscheduledbaseobject", keyBaseObject); //
+
+        // set keyactivitydelayunit
+        String keyUnit = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyactivitydelayunit");
+        switch (keyUnit) {
+            case "4":
+                keyUnit = "Workdays";
+                break;
+            case "3":
+                keyUnit = "Days";
+                break;
+            case "2":
+                keyUnit = "Hours";
+                break;
+            default:
+                keyUnit = "Minutes";
+                break;
+        }
+        dataBuilder.addData("keyactivitydelayunit", keyUnit); //
 
         /***********
          * Schema
          */
-
-        String[] publicEventOptions = { "Yes", "No" };
+        String[] enabledOption = { "Yes", "No" };
+        String[] refOption = { "Last Event", "Last Modified", "Creation Date", "Reference" };
+        String[] keyUnits = { "Minutes", "Hours", "Days", "Workdays" };
         schemaBuilder //
-                .addProperty("activityid", "string", null) //
-                .addProperty("txtactivityresult", "string",
-                        "Optional Execution Result. Additional item values can be defined here. ") //
-                .addProperty("keypublicresult", "string", "Yes", publicEventOptions);
+                .addProperty("txtscheduledview", "string", "") //
+                .addProperty("keyscheduledbaseobject", "string", "", refOption) //
+                .addProperty("keytimecomparefield", "string", "") //
+                .addProperty("numactivitydelay", "string", "") //
+                .addProperty("keyactivitydelayunit", "string", "", keyUnits) //
+                .addProperty("keyscheduledactivity", "string", "", enabledOption);
 
         /***********
          * UISchema
          */
         Map<String, String> radioOption = new HashMap<>();
         radioOption.put("format", "radio");
-        Map<String, String> multilineOption = new HashMap<>();
-        multilineOption.put("multi", "true");
+        Map<String, String> comboOption = new HashMap<>();
+        comboOption.put("format", "combo");
         uiSchemaBuilder //
-                .addCategory("Workflow") //
+                .addCategory("Timer") //
                 .addLayout(Layout.HORIZONTAL) //
-                .addElement("activityid", "Event ID", null) //
-                .addElement("keypublicresult", "Pubilc Event", radioOption) //
-                .addLayout(Layout.VERTICAL) //
-                .addElement("txtactivityresult", "Workflow Result", multilineOption);
-
+                .addElement("keyscheduledactivity", "Enabled", radioOption)
+                .addElement("numactivitydelay", "Delay", null)
+                .addElement("keyactivitydelayunit", "Unit", comboOption)
+                .addLayout(Layout.HORIZONTAL) //
+                .addElement("keyscheduledbaseobject", "Time Base Object", radioOption) //
+                .addElement("keytimecomparefield", "Item Reference", null) //
+                .addLayout(Layout.HORIZONTAL) //
+                .addElement("txtscheduledview", "Selection", null);
     }
 
     /**
@@ -156,26 +193,18 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"Workflow".equals(category)) {
+        if (!"Timer".equals(category)) {
             return;
         }
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
-        bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
-                json.getString("activityid", "0"));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
-                json.getString("txtactivityresult", ""));
-
-        String keyPublicResult = json.getString("keypublicresult", "Yes");
-        if ("Yes".equals(keyPublicResult)) {
-            keyPublicResult = "1";
-        } else {
-            keyPublicResult = "0";
-        }
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string", keyPublicResult);
-
+        // Rules
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessruleengine", "xs:string",
+                json.getString("txtbusinessruleengine", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessrule", "xs:string",
+                json.getString("txtbusinessrule", ""));
     }
 
 }

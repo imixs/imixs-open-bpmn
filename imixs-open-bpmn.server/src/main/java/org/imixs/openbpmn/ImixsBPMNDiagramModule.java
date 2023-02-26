@@ -19,6 +19,9 @@ import java.util.logging.Logger;
 
 import org.imixs.openbpmn.extensions.ImixsBPMNDefinitionsExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventExtension;
+import org.imixs.openbpmn.extensions.ImixsBPMNEventHistoryExtension;
+import org.imixs.openbpmn.extensions.ImixsBPMNEventRuleExtension;
+import org.imixs.openbpmn.extensions.ImixsBPMNEventTimerExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskExtension;
 import org.openbpmn.extension.BPMNExtension;
 import org.openbpmn.glsp.BPMNDiagramModule;
@@ -50,5 +53,8 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
         binding.addBinding().to(ImixsBPMNDefinitionsExtension.class);
         binding.addBinding().to(ImixsBPMNTaskExtension.class);
         binding.addBinding().to(ImixsBPMNEventExtension.class);
+        binding.addBinding().to(ImixsBPMNEventHistoryExtension.class);
+        binding.addBinding().to(ImixsBPMNEventRuleExtension.class);
+        binding.addBinding().to(ImixsBPMNEventTimerExtension.class);
     }
 }
