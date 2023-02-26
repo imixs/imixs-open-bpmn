@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-package org.imixs.openbpmn;
+package org.imixs.openbpmn.extensions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ import org.openbpmn.glsp.utils.BPMNGraphUtil;
 import org.w3c.dom.Element;
 
 /**
- * This is the Default BPMNEvent extension providing the JSONForms shemata.
+ * This is the Default BPMNEvent extension providing the JSONForms schemata.
  *
  * @author rsoika
  *
@@ -117,6 +117,10 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
+
+        /***********
+         * Data
+         */
         dataBuilder //
 
                 .addData("processid", bpmnElement.getExtensionAttribute(getNamespace(), "processid")) //
@@ -138,6 +142,9 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
                         ImixsExtensionUtil.getItemValueString(model, elementNode,
                                 "txtworkflowabstract"));
 
+        /***********
+         * Schema
+         */
         schemaBuilder. //
                 addProperty("processid", "string", null). //
                 addProperty("txteditorid", "string",
@@ -179,9 +186,13 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final BPMNElement bpmnElement,
+    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
+        // we are only interested in category Workflow and App
+        if (!"Workflow".equals(category) && !"App".equals(category)) {
+            return;
+        }
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 

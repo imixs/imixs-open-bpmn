@@ -1,4 +1,4 @@
-package org.imixs.openbpmn;
+package org.imixs.openbpmn.extensions;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -65,16 +65,10 @@ public class ImixsExtensionUtil {
         if (extensionElement == null) {
             extensionElement = model.createElement(BPMNNS.BPMN2, "extensionElements");
             isNew = true;
-
-            // reload
-            // extensionElement =
-            // BPMNModel.findChildNodeByName(bpmnElement.getElementNode(),
-            // "extensionElements");
         }
 
         // now search for the matching item....
         Element item = findItemByName(extensionElement, itemName);
-        // iterate through set and verify the name attribute
         if (item != null) {
             // if the value is null or empty the item node will be removed
             if (value == null || value.isEmpty()) {
@@ -90,18 +84,118 @@ public class ImixsExtensionUtil {
             }
         }
 
-        // update item...
+        // update the item...
         if (item != null) {
             item.setAttribute("name", itemName);
             item.setAttribute("type", type);
+
+            // remove all childs
+            while (item.hasChildNodes()) {
+                item.removeChild(item.getFirstChild());
+            }
+
+            Element valueElement = createItemValueElement(model);
             // update the item content
-            item.setTextContent(value);
+            CDATASection cdataSection = model.getDoc().createCDATASection(value);
+            valueElement.appendChild(cdataSection);
+            // valueElement.setTextContent(value);
+            item.appendChild(valueElement);
+
         }
 
         if (isNew) {
             // lazy creation
-            elementNode.appendChild(extensionElement);
+            // elementNode.appendChild(extensionElement);
+
+            elementNode.insertBefore(extensionElement, elementNode.getFirstChild());
         }
+    }
+
+    /**
+     * This method sets a imixs:item extension element with a Value List. The method
+     * creates an imixs:value entry for each list entry.
+     * <p>
+     * If the bpmnElement node not yet have any extension, the the method will
+     * create one.
+     * <p>
+     * If no item extension with the given name exists, the method will generate
+     * one.
+     * <p
+     * If the itemName is null or empty an existing item extension node will be
+     * removed.
+     * 
+     * @param bpmnElement
+     * @param itemName
+     * @param type
+     * @param value
+     */
+    public static void setItemValueList(final BPMNModel model, final Element elementNode, final String itemName,
+            final String type, final List<String> valueList) {
+
+        Element extensionElement = model.findChildNodeByName(elementNode,
+                BPMNNS.BPMN2, "extensionElements");
+
+        boolean isNew = false;
+        // if no extensionElement exists we create one
+        if (extensionElement == null) {
+            extensionElement = model.createElement(BPMNNS.BPMN2, "extensionElements");
+            isNew = true;
+        }
+
+        // now search for the matching item....
+        Element item = findItemByName(extensionElement, itemName);
+        if (item != null) {
+            // if the value is null or empty the item node will be removed
+            if (valueList == null || valueList.isEmpty()) {
+                extensionElement.removeChild(item);
+            }
+        } else {
+            // item does not exits
+            // we only create one if a value is given
+            if (valueList != null && !valueList.isEmpty()) {
+                // <imixs:item name="user.name" type="xs:string">John</imixs:item>
+                item = model.getDoc().createElementNS(getNamespaceURI(), getNamespace() + ":item");
+                extensionElement.appendChild(item);
+            }
+        }
+
+        // update the item...
+        if (item != null) {
+            item.setAttribute("name", itemName);
+            item.setAttribute("type", type);
+
+            // remove all childs
+            while (item.hasChildNodes()) {
+                item.removeChild(item.getFirstChild());
+            }
+
+            // create a imixs:value tag for each value in the list
+            for (String value : valueList) {
+                Element valueElement = createItemValueElement(model);
+                // update the item content
+                CDATASection cdataSection = model.getDoc().createCDATASection(value);
+                valueElement.appendChild(cdataSection);
+                // valueElement.setTextContent(value);
+                item.appendChild(valueElement);
+            }
+        }
+
+        if (isNew) {
+            // lazy creation
+            // elementNode.appendChild(extensionElement);
+
+            elementNode.insertBefore(extensionElement, elementNode.getFirstChild());
+        }
+    }
+
+    /**
+     * Creates an imixs:value element
+     * 
+     * <pre>{@code<imixs:value><![CDATA[model-1.0]]></imixs:value>}</pre>
+     */
+    public static Element createItemValueElement(BPMNModel model) {
+        Element element = model.getDoc().createElementNS(getNamespaceURI(), getNamespace() + ":value");
+        return element;
     }
 
     /**

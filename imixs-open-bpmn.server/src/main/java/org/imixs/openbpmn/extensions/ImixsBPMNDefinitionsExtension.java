@@ -13,14 +13,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-package org.imixs.openbpmn;
+package org.imixs.openbpmn.extensions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
@@ -163,22 +166,82 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
     }
 
     @Override
-    public void updatePropertiesData(final JsonObject json, final BPMNElement bpmnElement,
+    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
+        // we are only interested in category Workflow
+        if (!"Workflow".equals(category)) {
+            return;
+        }
+
+        long l = System.currentTimeMillis();
         // find the definitions element
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = model.getDefinitions();
-
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowmodelversion", "xs:string",
                 json.getString("txtworkflowmodelversion", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txttimefieldmapping", "xs:string",
-                json.getString("txttimefieldmapping", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtfieldmapping", "xs:string",
-                json.getString("txtfieldmapping", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtplugins", "xs:string",
-                json.getString("txtplugins", ""));
 
+        // Update dateobjects
+        JsonArray dataList = json.getJsonArray("dateobjects");
+        List<String> valueList = new ArrayList<>();
+        if (dataList != null) {
+            for (JsonValue jsonValue : dataList) {
+                JsonObject jsonData = (JsonObject) jsonValue;
+                // JsonObject jsonData = (JsonObject) iter.next();
+                if (jsonData != null) {
+                    String date = jsonData.getString("date", "");
+                    String item = jsonData.getString("item", "");
+                    if (!item.isEmpty()) {
+                        if (date.isEmpty()) {
+                            valueList.add(item);
+                        } else {
+                            valueList.add(date + "|" + item);
+                        }
+                    }
+                }
+            }
+        }
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "txttimefieldmapping", "xs:string", valueList);
+
+        // Update actors
+        valueList = new ArrayList<>();
+        dataList = json.getJsonArray("actors");
+        if (dataList != null) {
+            for (JsonValue jsonValue : dataList) {
+                JsonObject jsonData = (JsonObject) jsonValue;
+                // JsonObject jsonData = (JsonObject) iter.next();
+
+                if (jsonData != null) {
+                    String actor = jsonData.getString("actor", "");
+                    String item = jsonData.getString("item", "");
+                    if (!item.isEmpty()) {
+                        if (actor.isEmpty()) {
+                            valueList.add(item);
+                        } else {
+                            valueList.add(actor + "|" + item);
+                        }
+                    }
+                }
+            }
+        }
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "txtfieldmapping",
+                "xs:string", valueList);
+
+        // Update Plugin list
+        valueList = new ArrayList<>();
+        dataList = json.getJsonArray("plugins");
+        if (dataList != null) {
+            for (JsonValue jsonValue : dataList) {
+                JsonObject jsonData = (JsonObject) jsonValue;
+                // JsonObject jsonData = (JsonObject) iter.next();
+                if (jsonData != null) {
+                    valueList.add(jsonData.getString("classname", ""));
+                }
+            }
+        }
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "txtplugins",
+                "xs:string", valueList);
+        // update completed
     }
 
 }
