@@ -21,7 +21,7 @@ import javax.json.JsonObject;
 
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNTypes;
-import org.openbpmn.bpmn.elements.Event;
+import org.openbpmn.bpmn.elements.Activity;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
 import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
@@ -33,17 +33,17 @@ import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
  * @author rsoika
  *
  */
-public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
+public class ImixsBPMNTaskACLExtension extends ImixsBPMNExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
-    public ImixsBPMNEventACLExtension() {
+    public ImixsBPMNTaskACLExtension() {
         super();
     }
 
     @Override
     public int getPriority() {
-        return 103;
+        return 101;
     }
 
     /**
@@ -51,7 +51,7 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
      */
     @Override
     public boolean handlesElementTypeId(final String elementTypeId) {
-        return BPMNTypes.CATCH_EVENT.equals(elementTypeId);
+        return BPMNTypes.TASK.equals(elementTypeId);
     }
 
     /**
@@ -62,10 +62,12 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
      */
     @Override
     public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
-        if (bpmnElement instanceof Event) {
-            Event event = (Event) bpmnElement;
-            if (event.getType().equals(BPMNTypes.CATCH_EVENT)) {
-                if (event.hasAttribute(getNamespace() + ":activityid")) {
+
+        if (bpmnElement instanceof Activity) {
+            Activity task = (Activity) bpmnElement;
+            if (task.getType().equals(BPMNTypes.TASK)) {
+                // next check the extension attribute imixs:processid
+                if (task.hasAttribute(getNamespace() + ":processid")) {
                     return true;
                 }
             }
