@@ -15,11 +15,17 @@
  ********************************************************************************/
 package org.imixs.openbpmn.extensions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
@@ -101,65 +107,30 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
                 .addData("txtscheduledview",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "txtscheduledview")) //
                 .addData("numactivitydelay",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "numactivitydelay"));
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "numactivitydelay")) //
+                .addData("keyscheduledactivity",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keyscheduledactivity", "0")) //
+                .addDataList("keyscheduledbaseobject",
+                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyscheduledbaseobject")) //
+                .addData("keyactivitydelayunit",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keyactivitydelayunit")) //
+                .addData("keytimecomparefield",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keytimecomparefield")); //
 
-        // set enabled yes|no
-        String keyEnabled = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyscheduledactivity");
-        if ("1".equals(keyEnabled)) {
-            keyEnabled = "Yes";
-        } else {
-            keyEnabled = "No";
-        }
-        dataBuilder.addData("keyscheduledactivity", keyEnabled); //
-
-        // set keyscheduledbaseobject
-        String keyBaseObject = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyscheduledbaseobject");
-        switch (keyBaseObject) {
-            case "4":
-                keyBaseObject = "Reference";
-                break;
-            case "3":
-                keyBaseObject = "Creation Date";
-                break;
-            case "2":
-                keyBaseObject = "Last Modified";
-                break;
-            default:
-                keyBaseObject = "Last Event";
-                break;
-        }
-        dataBuilder.addData("keyscheduledbaseobject", keyBaseObject); //
-
-        // set keyactivitydelayunit
-        String keyUnit = ImixsExtensionUtil.getItemValueString(model, elementNode, "keyactivitydelayunit");
-        switch (keyUnit) {
-            case "4":
-                keyUnit = "Workdays";
-                break;
-            case "3":
-                keyUnit = "Days";
-                break;
-            case "2":
-                keyUnit = "Hours";
-                break;
-            default:
-                keyUnit = "Minutes";
-                break;
-        }
-        dataBuilder.addData("keyactivitydelayunit", keyUnit); //
-
-        // resolve Item References and set the label as the value...
-        ImixsItemNameMapper itemTimeMapping = new ImixsItemNameMapper(model, "txttimefieldmapping");
-        String refTimeItem = ImixsExtensionUtil.getItemValueString(model, elementNode, "keytimecomparefield");
-        dataBuilder.addData("keytimecomparefield", itemTimeMapping.resolveLabel(refTimeItem)); //
+        // fetch the timeItem definitions from the model definition
+        Element definitionsElementNode = model.getDefinitions();
+        List<String> timeItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
+                "txttimefieldmapping");
 
         /***********
          * Schema
          */
-        String[] enabledOption = { "Yes", "No" };
-        String[] refOption = { "Last Event", "Last Modified", "Creation Date", "Reference" };
-        String[] keyUnits = { "Minutes", "Hours", "Days", "Workdays" };
-        String[] timeFields = itemTimeMapping.getLabelsArray();
+        String[] enabledOption = { "Yes|1", "No|0" };
+        String[] refOption = { "Last Event|1", "Last Modified|2", "Creation Date|3", "Reference|4" };
+        String[] keyUnits = { "Minutes|1", "Hours|2", "Days|3", "Workdays|4" };
+        // String[] timeFields = itemTimeMapping.getLabelsArray();
+
+        String[] timeFields = timeItemDefs.toArray(String[]::new);
         schemaBuilder //
                 .addProperty("txtscheduledview", "string", "") //
                 .addProperty("keyscheduledbaseobject", "string", "", refOption) //
@@ -171,19 +142,26 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         /***********
          * UISchema
          */
-        Map<String, String> radioOption = new HashMap<>();
-        radioOption.put("format", "radio");
-        Map<String, String> comboOption = new HashMap<>();
-        comboOption.put("format", "combo");
+        Map<String, String> selectVertical = new HashMap<>();
+        selectVertical.put("format", "selectitem");
+        // selectVertical.put("orientation", "vertical");
+        Map<String, String> selectHorizontal = new HashMap<>();
+        selectHorizontal.put("format", "selectitem");
+
+        Map<String, String> selectCombo = new HashMap<>();
+        selectCombo.put("format", "selectitemcombo");
+
+        // Map<String, String> comboOption = new HashMap<>();
+        // comboOption.put("format", "combo");
         uiSchemaBuilder //
                 .addCategory("Scheduler") //
                 .addLayout(Layout.HORIZONTAL) //
-                .addElement("keyscheduledactivity", "Enabled", radioOption)
+                .addElement("keyscheduledactivity", "Enabled", selectHorizontal)
                 .addElement("numactivitydelay", "Delay", null)
-                .addElement("keyactivitydelayunit", "Unit", comboOption)
+                .addElement("keyactivitydelayunit", "Unit", selectCombo)
                 .addLayout(Layout.HORIZONTAL) //
-                .addElement("keyscheduledbaseobject", "Time Base Object", radioOption) //
-                .addElement("keytimecomparefield", "Item Reference", comboOption) //
+                .addElement("keyscheduledbaseobject", "A Time Base Object", selectVertical) //
+                .addElement("keytimecomparefield", "Item Reference", selectCombo) //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("txtscheduledview", "Selection", null);
     }
@@ -210,55 +188,26 @@ public class ImixsBPMNEventTimerExtension extends ImixsBPMNExtension {
         ImixsExtensionUtil.setItemValue(model, elementNode, "numactivitydelay", "xs:string",
                 json.getString("numactivitydelay", ""));
 
-        // set enabled yes|no
-        String keyEnabled = json.getString("keyscheduledactivity", "Yes");
-        if ("Yes".equals(keyEnabled)) {
-            keyEnabled = "1";
-        } else {
-            keyEnabled = "0";
-        }
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string", keyEnabled);
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string",
+                json.getString("keyscheduledactivity", "0"));
 
         // set keyscheduledbaseobject
-        String keyBaseObject = json.getString("keyscheduledbaseobject", "");
-        switch (keyBaseObject) {
-            case "Reference":
-                keyBaseObject = "4";
-                break;
-            case "Creation Date":
-                keyBaseObject = "3";
-                break;
-            case "Last Modified":
-                keyBaseObject = "2";
-                break;
-            default:
-                keyBaseObject = "1";
-                break;
+        JsonArray valueArray = json.getJsonArray("keyscheduledbaseobject");
+        Iterator<JsonValue> iter = valueArray.iterator();
+        List<String> keyBaseObject = new ArrayList<String>();
+        while (iter.hasNext()) {
+            JsonValue nextValue = iter.next();
+            String jsonStringValue = ((JsonString) nextValue).getString();
+            keyBaseObject.add(jsonStringValue);
         }
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledbaseobject", "xs:string", keyBaseObject);
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyscheduledbaseobject", "xs:string", keyBaseObject);
 
-        // set keyactivitydelayunit
-        String keyDelayUnit = json.getString("keyactivitydelayunit", "");
-        switch (keyDelayUnit) {
-            case "Workdays":
-                keyDelayUnit = "4";
-                break;
-            case "Days":
-                keyDelayUnit = "3";
-                break;
-            case "Hours":
-                keyDelayUnit = "2";
-                break;
-            default:
-                keyDelayUnit = "1";
-                break;
-        }
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keyactivitydelayunit", "xs:string", keyDelayUnit);
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keyactivitydelayunit", "xs:string",
+                json.getString("keyactivitydelayunit", "1"));
 
         // set timeCompare field
-        ImixsItemNameMapper timeFieldMapper = new ImixsItemNameMapper(model, "txttimefieldmapping");
         ImixsExtensionUtil.setItemValue(model, elementNode, "keytimecomparefield", "xs:string",
-                timeFieldMapper.resolveValue(json.getString("keytimecomparefield", "")));
+                json.getString("keytimecomparefield", ""));
 
     }
 

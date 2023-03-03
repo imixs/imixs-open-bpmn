@@ -245,18 +245,34 @@ public class ImixsExtensionUtil {
      * String. If no item with the given name exists, or the item has no values, the
      * method returns an empty string.
      * <p>
-     * This is just a convenience method to avoid validating the value list
      * 
      * @param bpmnElement
      * @param itemName
      * @return string value of the first imixs:value in a imixs:item
      */
     public static String getItemValueString(final BPMNModel model, final Element elementNode, String itemName) {
+
+        return getItemValueString(model, elementNode, itemName, "");
+    }
+
+    /**
+     * This helper method returns the first imixs:value within a imixs:item as a
+     * String. If no item with the given name exists, or the item has no values, the
+     * method returns the given default string.
+     * <p>
+     * 
+     * @param bpmnElement
+     * @param itemName
+     * @param defaultValue - optional default value
+     * @return string value of the first imixs:value in a imixs:item
+     */
+    public static String getItemValueString(final BPMNModel model, final Element elementNode, String itemName,
+            String defaultValue) {
         List<String> valueList = getItemValueList(model, elementNode, itemName);
         if (valueList != null && valueList.size() > 0) {
             return valueList.get(0);
         }
-        return "";
+        return defaultValue;
     }
 
     /**

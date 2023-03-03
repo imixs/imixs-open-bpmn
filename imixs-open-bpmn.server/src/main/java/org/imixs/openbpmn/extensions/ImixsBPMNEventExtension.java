@@ -108,22 +108,15 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         dataBuilder //
                 .addData("activityid", bpmnElement.getExtensionAttribute(getNamespace(), "activityid")) //
                 .addData("txtactivityresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult"));
-
-        // set public result
-        String keyPublicResult = ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult");
-        if ("0".equals(keyPublicResult)) {
-            keyPublicResult = "No";
-        } else {
-            keyPublicResult = "Yes";
-        }
-        dataBuilder.addData("keypublicresult", keyPublicResult); //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult")) //
+                .addData("keypublicresult",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult", "1"));
 
         /***********
          * Schema
          */
 
-        String[] publicEventOptions = { "Yes", "No" };
+        String[] publicEventOptions = { "Yes|1", "No|0" };
         schemaBuilder //
                 .addProperty("activityid", "string", null) //
                 .addProperty("txtactivityresult", "string",
@@ -133,15 +126,15 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         /***********
          * UISchema
          */
-        Map<String, String> radioOption = new HashMap<>();
-        radioOption.put("format", "radio");
+        Map<String, String> selectItemOption = new HashMap<>();
+        selectItemOption.put("format", "selectitem");
         Map<String, String> multilineOption = new HashMap<>();
         multilineOption.put("multi", "true");
         uiSchemaBuilder //
                 .addCategory("Workflow") //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("activityid", "Event ID", null) //
-                .addElement("keypublicresult", "Pubilc Event", radioOption) //
+                .addElement("keypublicresult", "Pubilc Event", selectItemOption) //
                 .addLayout(Layout.VERTICAL) //
                 .addElement("txtactivityresult", "Workflow Result", multilineOption);
 
@@ -168,13 +161,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
                 json.getString("txtactivityresult", ""));
 
-        String keyPublicResult = json.getString("keypublicresult", "Yes");
-        if ("Yes".equals(keyPublicResult)) {
-            keyPublicResult = "1";
-        } else {
-            keyPublicResult = "0";
-        }
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string", keyPublicResult);
+        ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string",
+                json.getString("keypublicresult", "1"));
 
     }
 
