@@ -275,6 +275,11 @@ public class ImixsExtensionUtil {
         return defaultValue;
     }
 
+    public static Boolean getItemValueBoolean(final BPMNModel model, final Element elementNode, String itemName) {
+
+        return Boolean.parseBoolean(getItemValueString(model, elementNode, itemName, "true"));
+    }
+
     /**
      * Helper method that finds a extension item by name
      * <p>
