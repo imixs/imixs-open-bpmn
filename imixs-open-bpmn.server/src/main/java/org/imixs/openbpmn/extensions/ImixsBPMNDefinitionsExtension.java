@@ -99,6 +99,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
         dataBuilder.closeArrayBuilder();
 
         // add Field Mapping
+        dataBuilder.addArray("actors");
         ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
         for (int i = 0; i < actorFieldMapper.values.size(); i++) {
             dataBuilder.addObject();

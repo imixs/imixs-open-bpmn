@@ -41,22 +41,28 @@ public class ImixsExtensionACLHelper {
          */
         dataBuilder //
                 .addData("keyupdateacl",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keyupdateacl", "false")) //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "keyupdateacl", "false")) //
                 .addDataList("keyownershipfields",
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyownershipfields")) //
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "keyownershipfields")) //
                 .addDataList("keyaddreadfields", ImixsExtensionUtil.getItemValueList(model, elementNode,
                         "keyaddreadfields"))
                 .addDataList("keyaddwritefields",
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyaddwritefields")) //
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "keyaddwritefields")) //
                 .addData("namownershipnames",
                         String.join(System.lineSeparator(),
-                                ImixsExtensionUtil.getItemValueList(model, elementNode, "namownershipnames")))
+                                ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                        "namownershipnames")))
                 .addData("namaddreadaccess",
                         String.join(System.lineSeparator(),
-                                ImixsExtensionUtil.getItemValueList(model, elementNode, "namaddreadaccess")))
+                                ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                        "namaddreadaccess")))
                 .addData("namaddwriteaccess",
                         String.join(System.lineSeparator(),
-                                ImixsExtensionUtil.getItemValueList(model, elementNode, "namaddwriteaccess")));
+                                ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                        "namaddwriteaccess")));
 
         // fetch the actorItem definitions from the model definition
         Element definitionsElementNode = model.getDefinitions();
@@ -93,17 +99,19 @@ public class ImixsExtensionACLHelper {
         uiSchemaBuilder //
                 .addCategory("ACL") //
                 .addLayout(Layout.HORIZONTAL) //
-                .addElement("keyupdateacl", "Active", selectHorizontal) //
-                .addLayout(Layout.HORIZONTAL) //
-                .addElement("keyownershipfields", "Owner", selectVertical)
-                .addElement("keyaddreadfields", "Read Access", selectVertical)
-                .addElement("keyaddwritefields", "Write Access", selectVertical)
+                .addElement("keyupdateacl", "Active", selectHorizontal);
+        if (actorItemDefs != null && actorItemDefs.size() > 0) {
+            uiSchemaBuilder //
+                    .addLayout(Layout.HORIZONTAL) //
+                    .addElement("keyownershipfields", "Owner", selectVertical)
+                    .addElement("keyaddreadfields", "Read Access", selectVertical)
+                    .addElement("keyaddwritefields", "Write Access", selectVertical);
+        }
+        uiSchemaBuilder //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("namownershipnames", "Others", multilineOption)
                 .addElement("namaddreadaccess", "Others", multilineOption)
-                .addElement("namaddwriteaccess", "Others", multilineOption)
-
-        ;
+                .addElement("namaddwriteaccess", "Others", multilineOption);
     }
 
     /**
@@ -146,7 +154,8 @@ public class ImixsExtensionACLHelper {
         for (String property : nameProperties) {
             String otherValue = json.getString(property, "");
             String[] lines = otherValue.split(System.lineSeparator());
-            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", Arrays.asList(lines));
+            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string",
+                    Arrays.asList(lines));
         }
 
     }
