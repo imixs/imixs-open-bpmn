@@ -96,7 +96,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
             dataBuilder.addData("date", timeFieldMapper.labels.get(i));
             dataBuilder.addData("item", timeFieldMapper.values.get(i));
         }
-        dataBuilder.closeArrayBuilder();
+        dataBuilder.closeArray();
 
         // add Field Mapping
         dataBuilder.addArray("actors");
@@ -106,7 +106,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
             dataBuilder.addData("actor", actorFieldMapper.labels.get(i));
             dataBuilder.addData("item", actorFieldMapper.values.get(i));
         }
-        dataBuilder.closeArrayBuilder();
+        dataBuilder.closeArray();
 
         // add Plugin list
         List<String> plugins = ImixsExtensionUtil.getItemValueList(model, elementNode, "txtplugins");
@@ -116,7 +116,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
             dataBuilder.addData("classname",
                     _plugin);
         }
-        dataBuilder.closeArrayBuilder();
+        dataBuilder.closeArray();
 
         /*
          * *****************
