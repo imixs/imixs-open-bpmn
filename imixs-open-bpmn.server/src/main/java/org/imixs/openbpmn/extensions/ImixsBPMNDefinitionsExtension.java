@@ -52,7 +52,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
 
     @Override
     public int getPriority() {
-        return 101;
+        return 1101;
     }
 
     @Override

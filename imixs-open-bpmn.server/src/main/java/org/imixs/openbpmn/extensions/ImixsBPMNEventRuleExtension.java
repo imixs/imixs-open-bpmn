@@ -47,7 +47,7 @@ public class ImixsBPMNEventRuleExtension extends ImixsBPMNExtension {
 
     @Override
     public int getPriority() {
-        return 105;
+        return 1104;
     }
 
     /**

@@ -43,7 +43,7 @@ public class ImixsBPMNTaskACLExtension extends ImixsBPMNExtension {
 
     @Override
     public int getPriority() {
-        return 101;
+        return 1102;
     }
 
     /**
