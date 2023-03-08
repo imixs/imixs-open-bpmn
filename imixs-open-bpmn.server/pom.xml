@@ -104,7 +104,7 @@
 		<dependency>
 			<groupId>org.imixs.bpmn</groupId>
 			<artifactId>open-bpmn.server</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
+			<version>0.9.1</version>
 		</dependency>
 	</dependencies>
 </project>
