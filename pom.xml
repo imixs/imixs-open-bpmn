@@ -70,7 +70,9 @@
 		<url>https://github.com/imixs/open-bpmn-imixs/issues</url>
 	</issueManagement>
 
-
+	<properties>
+		<org.imixs.bpmn.version>0.9.2</org.imixs.bpmn.version>
+	</properties>
 
 	<build>
 		<plugins>
