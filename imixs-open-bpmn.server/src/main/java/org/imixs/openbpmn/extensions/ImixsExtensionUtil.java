@@ -204,11 +204,15 @@ public class ImixsExtensionUtil {
      * If no extensionElement exists, or no imxis:item with the itemName exists,
      * than the method returns an empty List
      * 
+     * The method also avoids duplicates as this can of course not be handled by the
+     * react component.
+     * 
      * @param itemName
      * @return the itemValue list.
      */
     public static List<String> getItemValueList(final BPMNModel model, final Element elementNode, String itemName) {
         Element extensionElement = model.findChildNodeByName(elementNode, BPMNNS.BPMN2, "extensionElements");
+        List<String> uniqueValueList = new ArrayList<>();
 
         List<String> result = new ArrayList<>();
         if (extensionElement != null) {
@@ -220,17 +224,35 @@ public class ImixsExtensionUtil {
                 Set<Element> imixsValueElements = findAllImixsElements(imixsItemElement, "value");
                 if (imixsValueElements != null) {
                     for (Element imixsItemValue : imixsValueElements) {
+                        String value = null;
                         // we expect a CDATA, bu we can not be sure
                         Node cdata = findCDATA(imixsItemValue);
                         if (cdata != null) {
                             String cdValue = cdata.getNodeValue();
                             if (cdValue != null) {
-                                result.add(cdValue);
+                                value = cdValue;
                             }
                         } else {
                             // normal text node
-                            result.add(imixsItemValue.getTextContent());
+                            value = imixsItemValue.getTextContent();
                         }
+
+                        // avoid duplicates
+                        if (value.contains("|")) {
+                            String valuePart = value.substring(value.indexOf("|") + 1).trim();
+                            if (uniqueValueList.contains(valuePart)) {
+                                continue;
+                            }
+                            uniqueValueList.add(valuePart);
+                        } else {
+                            if (uniqueValueList.contains(value)) {
+                                continue;
+                            }
+                            uniqueValueList.add(value);
+                        }
+
+                        // add value - it is now unqique!
+                        result.add(value);
                     }
                 }
 

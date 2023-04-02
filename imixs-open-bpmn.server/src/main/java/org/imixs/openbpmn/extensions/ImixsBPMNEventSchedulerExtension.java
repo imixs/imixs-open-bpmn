@@ -63,8 +63,8 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
         /**
          * This Extension is for BPMN Task Elements only
          * <p>
-         * The method also verifies if the element has a imixs:processid attribute. This
-         * attribute is added in the 'addExtesnion' method call
+         * The method also verifies if the element has a imixs:activityid attribute.
+         * This attribute is added in the 'addExtension' method call
          */
         @Override
         public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
