@@ -35,7 +35,7 @@ import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
  */
 public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNEventACLExtension.class.getName());
 
     public ImixsBPMNEventACLExtension() {
         super();
@@ -43,7 +43,7 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
 
     @Override
     public int getPriority() {
-        return 1103;
+        return 1130;
     }
 
     /**

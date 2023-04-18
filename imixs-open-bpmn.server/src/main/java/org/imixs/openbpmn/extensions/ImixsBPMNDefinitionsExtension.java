@@ -44,7 +44,7 @@ import org.w3c.dom.Element;
  */
 public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNDefinitionsExtension.class.getName());
 
     public ImixsBPMNDefinitionsExtension() {
         super();

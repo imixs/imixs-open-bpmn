@@ -28,7 +28,7 @@ import org.openbpmn.extension.BPMNExtension;
  */
 public abstract class ImixsBPMNExtension implements BPMNExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNExtension.class.getName());
 
     public ImixsBPMNExtension() {
         super();

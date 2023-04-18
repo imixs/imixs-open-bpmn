@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
  */
 public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNEventExtension.class.getName());
 
     public ImixsBPMNEventExtension() {
         super();
@@ -48,7 +48,7 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
     @Override
     public int getPriority() {
-        return 1101;
+        return 1110;
     }
 
     /**

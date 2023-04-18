@@ -71,7 +71,7 @@
 	</issueManagement>
 
 	<properties>
-		<org.imixs.bpmn.version>0.9.4-SNAPSHOT</org.imixs.bpmn.version>
+		<org.imixs.bpmn.version>0.9.5-SNAPSHOT</org.imixs.bpmn.version>
 	</properties>
 
 	<build>
