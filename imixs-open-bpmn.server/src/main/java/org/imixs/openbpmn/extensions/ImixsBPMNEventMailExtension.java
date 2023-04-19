@@ -15,12 +15,17 @@
  ********************************************************************************/
 package org.imixs.openbpmn.extensions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
@@ -100,9 +105,11 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
          */
         dataBuilder //
                 .addData("txtmailsubject",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtmailsubject")) //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txtmailsubject")) //
                 .addData("rtfmailbody",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "rtfmailbody")) //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "rtfmailbody")) //
                 .addDataList("keymailreceiverfields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
                                 "keymailreceiverfields")) //
@@ -112,13 +119,15 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                 .addDataList("keymailreceiverfieldsbcc",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
                                 "keymailreceiverfieldsbcc")) //
-                .addData("nammailreceiver",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "nammailreceiver")) //
-                .addData("nammailreceivercc",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "nammailreceivercc")) //
-                .addData("nammailreceiverbcc",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "nammailreceiverbcc")) //
-
+                .addData("nammailreceiver", String.join(System.lineSeparator(),
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "nammailreceiver"))) //
+                .addData("nammailreceivercc", String.join(System.lineSeparator(),
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "nammailreceivercc"))) //
+                .addData("nammailreceiverbcc", String.join(System.lineSeparator(),
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "nammailreceiverbcc"))) //
         ;
 
         /***********
@@ -179,9 +188,47 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
     public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
-        // we are only interested in category Workflow and History
-        if ("Mail".equals(category)) {
+        // we are only interested in category Message
+        if (!"Message".equals(category)) {
+            return;
+        }
 
+        BPMNModel model = bpmnElement.getModel();
+        Element elementNode = bpmnElement.getElementNode();
+
+        // subject / body
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtmailsubject", "xs:string",
+                json.getString("txtmailsubject", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "rtfmailbody", "xs:string",
+                json.getString("rtfmailbody", ""));
+
+        // set the Checkbox Key Properties.
+        // For each property a for-each loop is used to iterate over the JsonValue
+        // objects in the JsonArray, and the getString() method is called to retrieve
+        // the string value of each JsonString object. Finally, the
+        // ImixsExtensionUtil.setItemValueList() method is called to set the value list
+        // for the property.
+        String[] keyProperties = { "keymailreceiverfields", "keymailreceiverfieldscc", "keymailreceiverfieldsbcc" };
+        for (String property : keyProperties) {
+            JsonArray valueArray = json.getJsonArray(property);
+            List<String> keyBaseObject = new ArrayList<>(valueArray.size());
+            for (JsonValue value : valueArray) {
+                String jsonStringValue = ((JsonString) value).getString();
+                keyBaseObject.add(jsonStringValue);
+            }
+            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject);
+        }
+
+        // Set the other names.
+        // For each property, the getString() method is called to retrieve the
+        // property value from the json object. The split() method is called to split
+        // the value into lines, and we set a value list for each property.
+        String[] nameProperties = { "nammailreceiver", "nammailreceivercc", "nammailreceiverbcc" };
+        for (String property : nameProperties) {
+            String otherValue = json.getString(property, "");
+            String[] lines = otherValue.split(System.lineSeparator());
+            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string",
+                    Arrays.asList(lines));
         }
 
     }
