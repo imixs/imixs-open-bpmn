@@ -1,6 +1,10 @@
 # Imixs Open BPMN
 
-The Imixs Open-BPMN - Extension
+This is the Imixs Open-BPMN - Extension for Imixs-Workflow.
+
+<img src="imixs-open-bpmn.png" />
+
+Find details on the [Open-BPMN project page](https://www.open-bpmn.org/install-imixs.html).
 
 # Docker
 
