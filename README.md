@@ -18,3 +18,10 @@ To push the image manually to a docker repo:
 
     $ docker build . -t imixs/imixs-open-bpmn:latest
     $ docker push imixs/imixs-open-bpmn:latest
+
+# Release Process
+
+The release process of Imixs-Open-BPMN is based on the standard [Imixs-Workflow release process](https://github.com/imixs/imixs-workflow/wiki/Releasemanagement-and-versioning).
+
+    $ mvn release:clean release:prepare -DautoVersionSubmodules=true
+    $ mvn release:perform
