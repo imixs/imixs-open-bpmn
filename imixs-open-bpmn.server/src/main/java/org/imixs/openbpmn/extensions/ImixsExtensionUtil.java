@@ -98,8 +98,14 @@ public class ImixsExtensionUtil {
             // update the item content
             CDATASection cdataSection = model.getDoc().createCDATASection(value);
             valueElement.appendChild(cdataSection);
-            // valueElement.setTextContent(value);
             item.appendChild(valueElement);
+
+            // if we have a file:// link than we create an additional open-bpmn attribute
+            if (value.startsWith("file://")) {
+                valueElement.setAttribute("open-bpmn:file-link", value);
+            } else {
+                valueElement.removeAttribute("open-bpmn:file-link");
+            }
 
         }
 

@@ -163,7 +163,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         uiSchemaBuilder //
                 .addCategory("Message") //
                 .addElement("txtmailsubject", "Subject", null) //
-                .addElement("rtfmailbody", "Body", multilineOption);
+                .addElement("rtfmailbody", "Body", this.getFileEditorOption());
 
         if (actorItemDefs != null && actorItemDefs.size() > 0) {
             uiSchemaBuilder //
@@ -208,7 +208,8 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         // the string value of each JsonString object. Finally, the
         // ImixsExtensionUtil.setItemValueList() method is called to set the value list
         // for the property.
-        String[] keyProperties = { "keymailreceiverfields", "keymailreceiverfieldscc", "keymailreceiverfieldsbcc" };
+        String[] keyProperties = { "keymailreceiverfields", "keymailreceiverfieldscc",
+                "keymailreceiverfieldsbcc" };
         for (String property : keyProperties) {
             JsonArray valueArray = json.getJsonArray(property);
             List<String> keyBaseObject = new ArrayList<>(valueArray.size());

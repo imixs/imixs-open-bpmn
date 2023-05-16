@@ -15,6 +15,8 @@
  ********************************************************************************/
 package org.imixs.openbpmn.extensions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openbpmn.bpmn.elements.core.BPMNElement;
@@ -54,5 +56,29 @@ public abstract class ImixsBPMNExtension implements BPMNExtension {
      */
     @Override
     public void addExtension(final BPMNElement bpmnElement) {
+    }
+
+    /**
+     * Helper method that returns a Multiline Option for the JSONForms UI Schema
+     * 
+     * @return
+     */
+    Map<String, String> getMultilineOption() {
+        Map<String, String> multilineOption = new HashMap<>();
+        multilineOption.put("multi", "true");
+        return multilineOption;
+    }
+
+    /**
+     * Helper method that returns a textFileEditor Option for the JSONForms UI
+     * Schema
+     * 
+     * @return
+     */
+    Map<String, String> getFileEditorOption() {
+        // custom fileEditor...
+        Map<String, String> fileEditor = new HashMap<>();
+        fileEditor.put("format", "textFileEditor");
+        return fileEditor;
     }
 }

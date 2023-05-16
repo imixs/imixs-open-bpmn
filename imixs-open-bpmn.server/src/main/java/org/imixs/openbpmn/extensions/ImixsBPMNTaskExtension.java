@@ -43,184 +43,184 @@ import org.w3c.dom.Element;
  */
 public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
 
-        private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
-        public ImixsBPMNTaskExtension() {
-                super();
-        }
+    public ImixsBPMNTaskExtension() {
+        super();
+    }
 
-        @Override
-        public int getPriority() {
-                return 1101;
-        }
+    @Override
+    public int getPriority() {
+        return 1101;
+    }
 
-        /**
-         * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
-         */
-        @Override
-        public boolean handlesElementTypeId(final String elementTypeId) {
-                return BPMNTypes.TASK.equals(elementTypeId);
-        }
+    /**
+     * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
+     */
+    @Override
+    public boolean handlesElementTypeId(final String elementTypeId) {
+        return BPMNTypes.TASK.equals(elementTypeId);
+    }
 
-        /**
-         * This Extension is for BPMN Task Elements only
-         * <p>
-         * The method also verifies if the element has a imixs:processid attribute. This
-         * attribute is added in the 'addExtesnion' method call
-         */
-        @Override
-        public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
+    /**
+     * This Extension is for BPMN Task Elements only
+     * <p>
+     * The method also verifies if the element has a imixs:processid attribute. This
+     * attribute is added in the 'addExtesnion' method call
+     */
+    @Override
+    public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
 
-                if (bpmnElement instanceof Activity) {
-                        Activity task = (Activity) bpmnElement;
-                        if (task.getType().equals(BPMNTypes.TASK)) {
-                                // next check the extension attribute imixs:processid
-                                if (task.hasAttribute(getNamespace() + ":processid")) {
-                                        return true;
-                                }
-                        }
+        if (bpmnElement instanceof Activity) {
+            Activity task = (Activity) bpmnElement;
+            if (task.getType().equals(BPMNTypes.TASK)) {
+                // next check the extension attribute imixs:processid
+                if (task.hasAttribute(getNamespace() + ":processid")) {
+                    return true;
                 }
-                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method adds a unique identifier to the corresponding BPMNElement
+     */
+    @Override
+    public void addExtension(final BPMNElement bpmnElement) {
+        if (bpmnElement instanceof Activity) {
+            bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
+
         }
 
-        /**
-         * This method adds a unique identifier to the corresponding BPMNElement
+        // if (bpmnElement instanceof Event) {
+        // bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
+        // }
+    }
+
+    /**
+     * Return the task id
+     */
+    @Override
+    public String getInfo(final BPMNElement bpmnElement) {
+        return "Id: " + bpmnElement.getExtensionAttribute(getNamespace(), "processid");
+    }
+
+    /**
+     * This Helper Method generates a JSON Object with the BPMNElement properties.
+     * <p>
+     * This json object is used on the GLSP Client to generate the EMF JsonForms
+     */
+    @Override
+    public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
+            final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
+
+        BPMNModel model = bpmnElement.getModel();
+        Element elementNode = bpmnElement.getElementNode();
+
+        /***********
+         * Data
          */
-        @Override
-        public void addExtension(final BPMNElement bpmnElement) {
-                if (bpmnElement instanceof Activity) {
-                        bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
+        dataBuilder //
 
-                }
+                .addData("processid", bpmnElement.getExtensionAttribute(getNamespace(), "processid")) //
+                .addData("txttype",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txttype")) //
+                .addData("txtimageurl",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txtimageurl")) //
+                .addData("txteditorid",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txteditorid")) //
+                .addData("form_definition",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "form.definition")) //
+                .addData("txtworkflowsummary",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txtworkflowsummary")) //
+                .addData("txtworkflowabstract",
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txtworkflowabstract"));
 
-                // if (bpmnElement instanceof Event) {
-                // bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
-                // }
-        }
-
-        /**
-         * Return the task id
+        /***********
+         * Schema
          */
-        @Override
-        public String getInfo(final BPMNElement bpmnElement) {
-                return "Id: " + bpmnElement.getExtensionAttribute(getNamespace(), "processid");
-        }
+        schemaBuilder. //
+                addProperty("processid", "string", null). //
+                addProperty("txteditorid", "string",
+                        "The 'Form ID' defines an application form element to be displayed within this task.")
+                . //
+                addProperty("txttype", "string", null). //
+                addProperty("txtimageurl", "string", null). //
+                addProperty("form_definition", "string",
+                        "An optional 'Form Definition' describe custom form sections and elements.")
+                . //
+                addProperty("txtworkflowsummary", "string", null). //
+                addProperty("txtworkflowabstract", "string", null);
 
-        /**
-         * This Helper Method generates a JSON Object with the BPMNElement properties.
-         * <p>
-         * This json object is used on the GLSP Client to generate the EMF JsonForms
+        Map<String, String> multilineOption = new HashMap<>();
+        multilineOption.put("multi", "true");
+
+        /***********
+         * UISchema
          */
-        @Override
-        public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
-                        final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
+        uiSchemaBuilder. //
+                addCategory("Workflow"). //
+                addLayout(Layout.HORIZONTAL). //
+                addElement("processid", "Process ID", null). //
+                addElement("txttype", "Type", null). //
+                addElement("txtimageurl", "Symbol", null). //
+                addLayout(Layout.HORIZONTAL). //
 
-                BPMNModel model = bpmnElement.getModel();
-                Element elementNode = bpmnElement.getElementNode();
+                addLayout(Layout.VERTICAL). //
+                addElement("txtworkflowsummary", "Summary", null). //
+                addElement("txtworkflowabstract", "Abstract", multilineOption). //
+                addCategory("App"). //
+                addElement("txteditorid", "Input Form ID", null). //
+                addElement("form_definition", "Input Form Definition", this.getFileEditorOption());
 
-                /***********
-                 * Data
-                 */
-                dataBuilder //
+    }
 
-                                .addData("processid", bpmnElement.getExtensionAttribute(getNamespace(), "processid")) //
-                                .addData("txttype",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode, "txttype")) //
-                                .addData("txtimageurl",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                                                "txtimageurl")) //
-                                .addData("txteditorid",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                                                "txteditorid")) //
-                                .addData("form.definition",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                                                "form.definition")) //
-                                .addData("txtworkflowsummary",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                                                "txtworkflowsummary")) //
-                                .addData("txtworkflowabstract",
-                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                                                "txtworkflowabstract"));
+    /**
+     * This method updates the BPMN properties and also the imixs processid.
+     * The processID is also updated for the frontend.
+     */
+    @Override
+    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+            final GModelElement gNodeElement) {
 
-                /***********
-                 * Schema
-                 */
-                schemaBuilder. //
-                                addProperty("processid", "string", null). //
-                                addProperty("txteditorid", "string",
-                                                "The 'Form ID' defines an application form element to be displayed within this task.")
-                                . //
-                                addProperty("txttype", "string", null). //
-                                addProperty("txtimageurl", "string", null). //
-                                addProperty("form.definition", "string",
-                                                "An optional 'Form Definition' describe custom form sections and elements.")
-                                . //
-                                addProperty("txtworkflowsummary", "string", null). //
-                                addProperty("txtworkflowabstract", "string", null);
+        // we are only interested in category Workflow and App
+        if (!"Workflow".equals(category) && !"App".equals(category)) {
+            return;
+        }
+        BPMNModel model = bpmnElement.getModel();
+        Element elementNode = bpmnElement.getElementNode();
 
-                Map<String, String> multilineOption = new HashMap<>();
-                multilineOption.put("multi", "true");
-
-                /***********
-                 * UISchema
-                 */
-                uiSchemaBuilder. //
-                                addCategory("Workflow"). //
-                                addLayout(Layout.HORIZONTAL). //
-                                addElement("processid", "Process ID", null). //
-                                addElement("txttype", "Type", null). //
-                                addElement("txtimageurl", "Symbol", null). //
-                                addLayout(Layout.HORIZONTAL). //
-
-                                addLayout(Layout.VERTICAL). //
-                                addElement("txtworkflowsummary", "Summary", null). //
-                                addElement("txtworkflowabstract", "Abstract", multilineOption). //
-                                addCategory("App"). //
-                                addElement("txteditorid", "Input Form ID", null). //
-                                addElement("form.definition", "Input Form Definition", multilineOption);
-
+        String oldTaskId = bpmnElement.getExtensionAttribute(getNamespace(), "processid");
+        String newTaskId = json.getString("processid", "0");
+        if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
+            bpmnElement.setExtensionAttribute(getNamespace(), "processid",
+                    json.getString("processid", "0"));
+            // update gNode...
+            GLabel label = BPMNGraphUtil.findExtensionLabel((BPMNGNode) gNodeElement);
+            if (label != null) {
+                label.setText("ID: " + newTaskId);
+            }
         }
 
-        /**
-         * This method updates the BPMN properties and also the imixs processid.
-         * The processID is also updated for the frontend.
-         */
-        @Override
-        public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
-                        final GModelElement gNodeElement) {
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
+                json.getString("txttype", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
+                json.getString("txtimageurl", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowsummary", "xs:string",
+                json.getString("txtworkflowsummary", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowabstract", "xs:string",
+                json.getString("txtworkflowabstract", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txteditorid", "xs:string",
+                json.getString("txteditorid", ""));
+        ImixsExtensionUtil.setItemValue(model, elementNode, "form.definition", "xs:string",
+                json.getString("form_definition", ""));
 
-                // we are only interested in category Workflow and App
-                if (!"Workflow".equals(category) && !"App".equals(category)) {
-                        return;
-                }
-                BPMNModel model = bpmnElement.getModel();
-                Element elementNode = bpmnElement.getElementNode();
-
-                String oldTaskId = bpmnElement.getExtensionAttribute(getNamespace(), "processid");
-                String newTaskId = json.getString("processid", "0");
-                if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
-                        bpmnElement.setExtensionAttribute(getNamespace(), "processid",
-                                        json.getString("processid", "0"));
-                        // update gNode...
-                        GLabel label = BPMNGraphUtil.findExtensionLabel((BPMNGNode) gNodeElement);
-                        if (label != null) {
-                                label.setText("ID: " + newTaskId);
-                        }
-                }
-
-                ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
-                                json.getString("txttype", ""));
-                ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
-                                json.getString("txtimageurl", ""));
-                ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowsummary", "xs:string",
-                                json.getString("txtworkflowsummary", ""));
-                ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowabstract", "xs:string",
-                                json.getString("txtworkflowabstract", ""));
-                ImixsExtensionUtil.setItemValue(model, elementNode, "txteditorid", "xs:string",
-                                json.getString("txteditorid", ""));
-                ImixsExtensionUtil.setItemValue(model, elementNode, "form.definition", "xs:string",
-                                json.getString("form.definition", ""));
-
-        }
+    }
 
 }

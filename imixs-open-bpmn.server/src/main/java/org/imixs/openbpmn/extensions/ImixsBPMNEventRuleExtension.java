@@ -116,7 +116,7 @@ public class ImixsBPMNEventRuleExtension extends ImixsBPMNExtension {
         uiSchemaBuilder //
                 .addCategory("Business Rule") //
                 .addElement("txtbusinessruleengine", "Engine", null) //
-                .addElement("txtbusinessrule", "Rule", multilineOption); //
+                .addElement("txtbusinessrule", "Rule", this.getFileEditorOption()); //
 
     }
 
