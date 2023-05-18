@@ -32,7 +32,7 @@ import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
-import org.openbpmn.glsp.utils.BPMNGraphUtil;
+import org.openbpmn.glsp.utils.BPMNGModelUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -202,7 +202,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid",
                     json.getString("processid", "0"));
             // update gNode...
-            GLabel label = BPMNGraphUtil.findExtensionLabel((BPMNGNode) gNodeElement);
+            GLabel label = BPMNGModelUtil.findExtensionLabel((BPMNGNode) gNodeElement);
             if (label != null) {
                 label.setText("ID: " + newTaskId);
             }
