@@ -26,7 +26,7 @@ import org.imixs.openbpmn.extensions.ImixsBPMNEventRuleExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventSchedulerExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskACLExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskExtension;
-import org.openbpmn.extension.BPMNExtension;
+import org.openbpmn.extensions.BPMNElementExtension;
 import org.openbpmn.glsp.BPMNDiagramModule;
 
 import com.google.inject.multibindings.Multibinder;
@@ -48,7 +48,7 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
      *
      * @param binding
      */
-    public void configureBPMNExtensions(final Multibinder<BPMNExtension> binding) {
+    public void configureBPMNExtensions(final Multibinder<BPMNElementExtension> binding) {
         // bind BPMN default extensions
         super.configureBPMNExtensions(binding);
 

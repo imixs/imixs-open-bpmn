@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openbpmn.bpmn.elements.core.BPMNElement;
-import org.openbpmn.extension.BPMNExtension;
+import org.openbpmn.extensions.BPMNElementExtension;
 
 /**
  * This is the Default BPMNEvent extension providing the JSONForms shemata.
@@ -28,7 +28,7 @@ import org.openbpmn.extension.BPMNExtension;
  * @author rsoika
  *
  */
-public abstract class ImixsBPMNExtension implements BPMNExtension {
+public abstract class ImixsBPMNExtension implements BPMNElementExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNExtension.class.getName());
 
