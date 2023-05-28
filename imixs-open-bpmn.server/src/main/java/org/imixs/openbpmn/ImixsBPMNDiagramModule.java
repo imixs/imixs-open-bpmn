@@ -48,9 +48,10 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
      *
      * @param binding
      */
-    public void configureBPMNExtensions(final Multibinder<BPMNElementExtension> binding) {
+    @Override
+    public void configureBPMNElementExtensions(final Multibinder<BPMNElementExtension> binding) {
         // bind BPMN default extensions
-        super.configureBPMNExtensions(binding);
+        super.configureBPMNElementExtensions(binding);
 
         // Imixs Extensions (just for testing)
         binding.addBinding().to(ImixsBPMNDefinitionsExtension.class);
