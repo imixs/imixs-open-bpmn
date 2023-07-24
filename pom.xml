@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.bpmn</groupId>
 	<artifactId>imixs-open-bpmn</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Imixs Open BPMN</name>
 	<description>The Imixs Open BPMN Project</description>
@@ -62,7 +62,7 @@
 		<connection>scm:git:git@github.com:imixs/open-bpmn-imixs.git</connection>
 		<developerConnection>scm:git:git@github.com:imixs/open-bpmn-imixs.git</developerConnection>
 		<url>https://github.com/imixs/open-bpmn-imixs/</url>
-		<tag>imixs-open-bpmn-0.1.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
