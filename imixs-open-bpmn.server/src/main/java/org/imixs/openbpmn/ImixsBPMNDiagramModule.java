@@ -53,10 +53,12 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
         // bind BPMN default extensions
         super.configureBPMNElementExtensions(binding);
 
-        // Imixs Extensions (just for testing)
+        // Imixs Task Extensions
         binding.addBinding().to(ImixsBPMNDefinitionsExtension.class);
         binding.addBinding().to(ImixsBPMNTaskExtension.class);
         binding.addBinding().to(ImixsBPMNTaskACLExtension.class);
+
+        // Imixs Event Extensions
         binding.addBinding().to(ImixsBPMNEventExtension.class);
         binding.addBinding().to(ImixsBPMNEventHistoryExtension.class);
         binding.addBinding().to(ImixsBPMNEventRuleExtension.class);

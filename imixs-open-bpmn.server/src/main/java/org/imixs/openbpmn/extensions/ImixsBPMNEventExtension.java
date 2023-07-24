@@ -15,11 +15,17 @@
  ********************************************************************************/
 package org.imixs.openbpmn.extensions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
@@ -110,18 +116,29 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 .addData("txtactivityresult",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult")) //
                 .addData("keypublicresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult", "1"));
+                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult", "1")) //
+                .addDataList("keyrestrictedvisibility",
+                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyrestrictedvisibility")) //
+                .addData("$readaccess", String.join(System.lineSeparator(),
+                        ImixsExtensionUtil.getItemValueList(model, elementNode, "$readaccess")));
 
         /***********
          * Schema
          */
-
+        // fetch the actorItem definitions from the model definition
+        Element definitionsElementNode = model.getDefinitions();
+        List<String> actorItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
+                "txtfieldmapping");
+        String[] actorItemDefsArray = actorItemDefs.toArray(String[]::new);
         String[] publicEventOptions = { "Yes|1", "No|0" };
         schemaBuilder //
                 .addProperty("activityid", "string", null) //
                 .addProperty("txtactivityresult", "string",
                         "Optional Execution Result. Additional item values can be defined here. ") //
-                .addProperty("keypublicresult", "string", "Yes", publicEventOptions);
+                .addProperty("keypublicresult", "string", "Show Event as an Action in the Application UI",
+                        publicEventOptions) //
+                .addProperty("keyrestrictedvisibility", "string", "", actorItemDefsArray) //
+                .addProperty("$readaccess", "string", "Add multiple entries in separate lines.");
 
         /***********
          * UISchema
@@ -130,6 +147,9 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         selectItemOption.put("format", "selectitem");
         Map<String, String> multilineOption = new HashMap<>();
         multilineOption.put("multi", "true");
+        Map<String, String> selectVertical = new HashMap<>();
+        selectVertical.put("format", "selectitem");
+        selectVertical.put("orientation", "vertical");
         uiSchemaBuilder //
                 .addCategory("Workflow") //
                 .addLayout(Layout.HORIZONTAL) //
@@ -137,6 +157,13 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 .addElement("keypublicresult", "Pubilc Event", selectItemOption) //
                 .addLayout(Layout.VERTICAL) //
                 .addElement("txtactivityresult", "Workflow Result", multilineOption);
+
+        uiSchemaBuilder.addLayout(Layout.HORIZONTAL); //
+        if (actorItemDefs != null && actorItemDefs.size() > 0) {
+            uiSchemaBuilder.addElement("keyrestrictedvisibility", "Restrict Visibility to Actors", selectVertical);
+        }
+
+        uiSchemaBuilder.addElement("$readaccess", "Restrict Read Access", multilineOption);
 
     }
 
@@ -164,6 +191,20 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string",
                 json.getString("keypublicresult", "1"));
 
+        // keyrestrictedvisibility
+        JsonArray valueArray = json.getJsonArray("keyrestrictedvisibility");
+        List<String> keyBaseObject = new ArrayList<>(valueArray.size());
+        for (JsonValue value : valueArray) {
+            String jsonStringValue = ((JsonString) value).getString();
+            keyBaseObject.add(jsonStringValue);
+        }
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string", keyBaseObject);
+
+        // $readAccess
+        String otherValue = json.getString("$readaccess", "");
+        String[] lines = otherValue.split(System.lineSeparator());
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
+                Arrays.asList(lines));
     }
 
 }
