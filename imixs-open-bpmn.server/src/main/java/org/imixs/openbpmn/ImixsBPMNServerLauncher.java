@@ -47,7 +47,7 @@ public final class ImixsBPMNServerLauncher {
             ServerModule serverModule = new ServerModule().configureDiagramModule(new ImixsBPMNDiagramModule());
             GLSPServerLauncher launcher = new SocketGLSPServerLauncher(serverModule);
             launcher.start("localhost", port);
-        } catch (ParseException | IOException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
