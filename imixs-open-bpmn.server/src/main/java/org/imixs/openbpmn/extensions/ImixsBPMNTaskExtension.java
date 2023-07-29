@@ -204,7 +204,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
             // update gNode...
             GLabel label = BPMNGModelUtil.findExtensionLabel((BPMNGNode) gNodeElement);
             if (label != null) {
-                label.setText("ID: " + newTaskId);
+                label.setText("Id: " + newTaskId);
             }
         }
 
