@@ -195,6 +195,35 @@ public class ImixsExtensionUtil {
     }
 
     /**
+     * This method removes a imixs:item extension element if it exits.
+     * <p>
+     * If the bpmnElement node not yet have any extension, the the method will
+     * change nothing.
+     * 
+     * @param bpmnElement
+     * @param itemName
+     * @param type
+     * @param value
+     */
+    public static void removeItemValue(final BPMNModel model, final Element elementNode, final String itemName) {
+
+        Element extensionElement = model.findChildNodeByName(elementNode,
+                BPMNNS.BPMN2, "extensionElements");
+
+        // if no extensionElement exists exit
+        if (extensionElement == null) {
+            return;
+        }
+
+        // now search for the matching item....
+        Element item = findItemByName(extensionElement, itemName);
+        if (item != null) {
+            // remove the item node
+            extensionElement.removeChild(item);
+        }
+    }
+
+    /**
      * Creates an imixs:value element
      * 
      * <pre>{@code<imixs:value><![CDATA[model-1.0]]></imixs:value>}</pre>
