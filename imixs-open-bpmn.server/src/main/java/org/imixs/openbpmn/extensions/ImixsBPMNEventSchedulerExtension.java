@@ -119,9 +119,8 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
                                                                 "txtscheduledview")); //
 
                 // fetch the timeItem definitions from the model definition
-                Element definitionsElementNode = model.getDefinitions();
-                List<String> timeItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
-                                "txttimefieldmapping");
+                List<String> timeItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
+                                "txttimefieldmapping", false);
 
                 /***********
                  * Schema

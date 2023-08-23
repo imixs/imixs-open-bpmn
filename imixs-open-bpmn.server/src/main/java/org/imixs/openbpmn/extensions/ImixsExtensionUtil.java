@@ -37,6 +37,38 @@ public class ImixsExtensionUtil {
     }
 
     /**
+     * This method returns a Imixs ItemValue List from the Model Definition.
+     * Such a list can contains label|value pairs.
+     * 
+     * IF the boolean 'stripLabels' is true than only the value part will be given.
+     * 
+     * @param model
+     * @param itemName
+     * @return
+     */
+    public static List<String> getDefinitionsElementList(BPMNModel model, String itemName, boolean stripLabels) {
+
+        // fetch the actorItem definitions from the model definition
+        Element definitionsElementNode = model.getDefinitions();
+        List<String> itemDefValues = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
+                itemName);
+
+        if (stripLabels == false) {
+            return itemDefValues;
+        }
+
+        // strip the label part....
+        List<String> stripedList = new ArrayList<String>();
+        for (String value : itemDefValues) {
+            if (value.contains("|")) {
+                value = value.substring(value.indexOf("|") + 1).trim();
+            }
+            stripedList.add(value);
+        }
+        return stripedList;
+    }
+
+    /**
      * This method sets a imixs:item extension element.
      * <p>
      * If the bpmnElement node not yet have any extension, the the method will
@@ -129,14 +161,20 @@ public class ImixsExtensionUtil {
      * <p
      * If the itemName is null or empty an existing item extension node will be
      * removed.
+     *
+     * An optional 'referenceList' can be provided (e.g. the Actor Mapping List). If
+     * an value is not part of the referenceList, than the value will not
+     * be set! This is to avoid holding old field mappings. See Issue #18
      * 
-     * @param bpmnElement
+     * 
+     * @param elementNode
      * @param itemName
      * @param type
-     * @param value
+     * @param valueList     - new valueList
+     * @param referenceList - optional list of allowed values
      */
     public static void setItemValueList(final BPMNModel model, final Element elementNode, final String itemName,
-            final String type, final List<String> valueList) {
+            final String type, final List<String> valueList, List<String> referenceList) {
 
         Element extensionElement = model.findChildNodeByName(elementNode,
                 BPMNNS.BPMN2, "extensionElements");
@@ -177,6 +215,10 @@ public class ImixsExtensionUtil {
 
             // create a imixs:value tag for each value in the list
             for (String value : valueList) {
+                if (referenceList != null && !referenceList.contains(value)) {
+                    // not in our reference list!
+                    continue;
+                }
                 Element valueElement = createItemValueElement(model);
                 // update the item content
                 CDATASection cdataSection = model.getDoc().createCDATASection(value);
@@ -233,6 +275,10 @@ public class ImixsExtensionUtil {
         return element;
     }
 
+    public static List<String> getItemValueList(final BPMNModel model, final Element elementNode, String itemName) {
+        return getItemValueList(model, elementNode, itemName, null);
+    }
+
     /**
      * This helper method returns a value list of all imixs:value elements of an
      * imixs:item by a given name.
@@ -242,10 +288,16 @@ public class ImixsExtensionUtil {
      * The method also avoids duplicates as this can of course not be handled by the
      * react component.
      * 
-     * @param itemName
+     * An optional 'referenceList' can be provided (e.g. the Actor Mapping List). If
+     * an existing value is not part of the referenceList, than the value will not
+     * be set! This is to avoid holding old field mappings. See Issue #18
+     * 
+     * @param itemName      - name of the item
+     * @param referenceList - optional list of allowed values
      * @return the itemValue list.
      */
-    public static List<String> getItemValueList(final BPMNModel model, final Element elementNode, String itemName) {
+    public static List<String> getItemValueList(final BPMNModel model, final Element elementNode, String itemName,
+            List<String> referenceList) {
         Element extensionElement = model.findChildNodeByName(elementNode, BPMNNS.BPMN2, "extensionElements");
         List<String> uniqueValueList = new ArrayList<>();
 
@@ -286,9 +338,12 @@ public class ImixsExtensionUtil {
                             uniqueValueList.add(value);
                         }
 
-                        // add value - it is now unqique!
-                        result.add(value);
+                        // add value - it is now unique!
+                        if (referenceList == null || referenceList.contains(value)) {
+                            result.add(value);
+                        }
                     }
+
                 }
 
             }
@@ -325,7 +380,7 @@ public class ImixsExtensionUtil {
      */
     public static String getItemValueString(final BPMNModel model, final Element elementNode, String itemName,
             String defaultValue) {
-        List<String> valueList = getItemValueList(model, elementNode, itemName);
+        List<String> valueList = getItemValueList(model, elementNode, itemName, null);
         if (valueList != null && valueList.size() > 0) {
             return valueList.get(0);
         }

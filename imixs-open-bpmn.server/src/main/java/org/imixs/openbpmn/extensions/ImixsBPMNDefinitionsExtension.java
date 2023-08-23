@@ -17,6 +17,7 @@ package org.imixs.openbpmn.extensions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -26,15 +27,21 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 
 import org.eclipse.glsp.graph.GModelElement;
+import org.eclipse.glsp.server.actions.ActionDispatcher;
 import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.BPMNTypes;
 import org.openbpmn.bpmn.elements.BPMNProcess;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
+import org.openbpmn.bpmn.elements.core.BPMNElementNode;
 import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
+import org.openbpmn.glsp.model.BPMNGModelFactory;
+import org.openbpmn.glsp.model.BPMNGModelState;
 import org.w3c.dom.Element;
+
+import com.google.inject.Inject;
 
 /**
  * This is the Default BPMNEvent extension providing the JSONForms shemata.
@@ -45,6 +52,15 @@ import org.w3c.dom.Element;
 public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNDefinitionsExtension.class.getName());
+
+    @Inject
+    protected ActionDispatcher actionDispatcher;
+
+    @Inject
+    protected BPMNGModelState modelState;
+
+    @Inject
+    protected BPMNGModelFactory bpmnGModelFactory;
 
     public ImixsBPMNDefinitionsExtension() {
         super();
@@ -155,20 +171,21 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
     @Override
     public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
-
         // we are only interested in category Workflow
         if (!"Workflow".equals(category)) {
             return;
         }
 
-        long l = System.currentTimeMillis();
         // find the definitions element
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = model.getDefinitions();
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowmodelversion", "xs:string",
                 json.getString("txtworkflowmodelversion", ""));
 
-        // Update dateobjects
+        /***********
+         * Update dateobjects
+         */
+        List<String> oldDateList = ImixsExtensionUtil.getItemValueList(model, elementNode, "dateobjects");
         JsonArray dataList = json.getJsonArray("dateobjects");
         List<String> valueList = new ArrayList<>();
         if (dataList != null) {
@@ -188,9 +205,29 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
                 }
             }
         }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "txttimefieldmapping", "xs:string", valueList);
+        // do we have a new valuelist?
+        if (!oldDateList.equals(valueList)) {
+            ImixsExtensionUtil.setItemValueList(model, elementNode, "txttimefieldmapping", "xs:string", valueList,
+                    null);
+            // Reset the model does not work here but it isn't needed at all.
+            // We simple need to iterate over all Events and call the
+            // ImixsBPMNEventACLExtension
+            LinkedHashSet<BPMNElementNode> allACLElements = new LinkedHashSet<BPMNElementNode>();
+            allACLElements.addAll(modelState.getBpmnModel().findAllEvents());
+            ImixsBPMNEventACLExtension aclEventExtension = new ImixsBPMNEventACLExtension();
+            for (BPMNElementNode aclElement : allACLElements) {
+                if (aclEventExtension.handlesBPMNElement(aclElement)) {
+                    GModelElement gTask = modelState.getIndex().get(aclElement.getId())
+                            .orElse(null);
+                    bpmnGModelFactory.applyBPMNElementExtensions(gTask, aclElement);
+                }
+            }
+        }
 
-        // Update actors
+        /***********
+         * Update actors
+         */
+        List<String> oldActorList = ImixsExtensionUtil.getItemValueList(model, elementNode, "txtfieldmapping");
         valueList = new ArrayList<>();
         dataList = json.getJsonArray("actors");
         if (dataList != null) {
@@ -211,10 +248,33 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
                 }
             }
         }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "txtfieldmapping",
-                "xs:string", valueList);
+        // do we have a new valuelist?
+        if (!oldActorList.equals(valueList)) {
+            ImixsExtensionUtil.setItemValueList(model, elementNode, "txtfieldmapping",
+                    "xs:string", valueList, null);
 
-        // Update Plugin list
+            // Reset the model does not work here but it isn't needed at all.
+            // We simple need to iterate over all Events and Task and call the
+            // ImixsBPMNTaskACLExtension and ImixsBPMNEventACLExtension
+            LinkedHashSet<BPMNElementNode> allACLElements = new LinkedHashSet<BPMNElementNode>();
+            allACLElements.addAll(modelState.getBpmnModel().findAllEvents());
+            allACLElements.addAll(modelState.getBpmnModel().findAllActivities());
+            ImixsBPMNEventACLExtension aclEventExtension = new ImixsBPMNEventACLExtension();
+            ImixsBPMNTaskACLExtension aclTaskExtension = new ImixsBPMNTaskACLExtension();
+            for (BPMNElementNode aclElement : allACLElements) {
+                if (aclEventExtension.handlesBPMNElement(aclElement)
+                        || aclTaskExtension.handlesBPMNElement(aclElement)) {
+                    GModelElement gTask = modelState.getIndex().get(aclElement.getId())
+                            .orElse(null);
+                    bpmnGModelFactory.applyBPMNElementExtensions(gTask, aclElement);
+                }
+            }
+        }
+
+        /***********
+         * Update Plugin list
+         */
+        List<String> oldPluginList = ImixsExtensionUtil.getItemValueList(model, elementNode, "txtplugins");
         valueList = new ArrayList<>();
         dataList = json.getJsonArray("plugins");
         if (dataList != null) {
@@ -226,8 +286,12 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
                 }
             }
         }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "txtplugins",
-                "xs:string", valueList);
+        // do we have a new valuelist?
+        if (!oldPluginList.equals(valueList)) {
+            ImixsExtensionUtil.setItemValueList(model, elementNode, "txtplugins",
+                    "xs:string", valueList, null);
+        }
+
         // update completed
     }
 

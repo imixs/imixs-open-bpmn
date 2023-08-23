@@ -183,6 +183,11 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
+        // fetch the actorItem definitions from the model definition
+        Element definitionsElementNode = model.getDefinitions();
+        List<String> actorItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
+                "txtfieldmapping");
+
         bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
                 json.getString("activityid", "0"));
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
@@ -198,7 +203,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
             String jsonStringValue = ((JsonString) value).getString();
             keyBaseObject.add(jsonStringValue);
         }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string", keyBaseObject);
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string", keyBaseObject,
+                actorItemDefs);
 
         // $readAccess
         String otherValue = json.getString("$readaccess", "");
@@ -208,7 +214,7 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         } else {
             String[] lines = otherValue.split(System.lineSeparator());
             ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
-                    Arrays.asList(lines));
+                    Arrays.asList(lines), null);
         }
     }
 

@@ -100,6 +100,11 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
+        // fetch the actorItem definitions from the model definition
+        List<String> actorItemDefsValues = ImixsExtensionUtil.getDefinitionsElementList(model,
+                        "txtfieldmapping", true);
+        List<String> actorItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
+                        "txtfieldmapping", false);
         /***********
          * Data
          */
@@ -112,13 +117,13 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                                 "rtfmailbody")) //
                 .addDataList("keymailreceiverfields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                "keymailreceiverfields")) //
+                                                        "keymailreceiverfields", actorItemDefsValues)) //
                 .addDataList("keymailreceiverfieldscc",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                "keymailreceiverfieldscc")) //
+                                                        "keymailreceiverfieldscc", actorItemDefsValues)) //
                 .addDataList("keymailreceiverfieldsbcc",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                "keymailreceiverfieldsbcc")) //
+                                                        "keymailreceiverfieldsbcc", actorItemDefsValues)) //
                 .addData("nammailreceiver", String.join(System.lineSeparator(),
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
                                 "nammailreceiver"))) //
@@ -133,10 +138,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         /***********
          * Schema
          */
-        // fetch the actorItem definitions from the model definition
-        Element definitionsElementNode = model.getDefinitions();
-        List<String> actorItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
-                "txtfieldmapping");
+
 
         String[] actorItemDefsArray = actorItemDefs.toArray(String[]::new);
         schemaBuilder //
@@ -191,10 +193,13 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         // we are only interested in category Message
         if (!"Message".equals(category)) {
             return;
-        }
-
+    }
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
+
+        // fetch the actorItem definitions from the model definition
+        List<String> actorItemDefsValues = ImixsExtensionUtil.getDefinitionsElementList(model,
+                        "txtfieldmapping", true);
 
         // subject / body
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtmailsubject", "xs:string",
@@ -217,7 +222,8 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                 String jsonStringValue = ((JsonString) value).getString();
                 keyBaseObject.add(jsonStringValue);
             }
-            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject);
+            ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject,
+                            actorItemDefsValues);
         }
 
         // Set the other names.
@@ -229,7 +235,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
             String otherValue = json.getString(property, "");
             String[] lines = otherValue.split(System.lineSeparator());
             ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string",
-                    Arrays.asList(lines));
+                            Arrays.asList(lines), null);
         }
 
     }
