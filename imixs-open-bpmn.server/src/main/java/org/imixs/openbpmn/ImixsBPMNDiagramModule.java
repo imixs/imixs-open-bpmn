@@ -17,6 +17,7 @@ package org.imixs.openbpmn;
 
 import java.util.logging.Logger;
 
+import org.imixs.openbpmn.extensions.ActorValidatorExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNDefinitionsExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventACLExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventExtension;
@@ -27,6 +28,7 @@ import org.imixs.openbpmn.extensions.ImixsBPMNEventSchedulerExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskACLExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskExtension;
 import org.openbpmn.extensions.BPMNElementExtension;
+import org.openbpmn.extensions.BPMNModelExtension;
 import org.openbpmn.glsp.BPMNDiagramModule;
 
 import com.google.inject.multibindings.Multibinder;
@@ -65,5 +67,19 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
         binding.addBinding().to(ImixsBPMNEventSchedulerExtension.class);
         binding.addBinding().to(ImixsBPMNEventACLExtension.class);
         binding.addBinding().to(ImixsBPMNEventMailExtension.class);
+
+    }
+
+    /**
+     * This method adds the BPMN default model extensions
+     * <p>
+     * Overwrite this method to add custom BPMN Extensions
+     *
+     * @param binding
+     */
+    public void configureBPMNModelExtensions(final Multibinder<BPMNModelExtension> binding) {
+        // bind Imixs model extensions
+        binding.addBinding().to(ActorValidatorExtension.class);
+
     }
 }
