@@ -16,7 +16,6 @@
 package org.imixs.openbpmn.extensions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -118,9 +117,7 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
                                                 ImixsExtensionUtil.getItemValueString(model, elementNode,
                                                                 "txtscheduledview")); //
 
-                // fetch the timeItem definitions from the model definition
-                List<String> timeItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
-                                "txttimefieldmapping", false);
+                ImixsItemNameMapper timeFieldMapper = new ImixsItemNameMapper(model, "txttimefieldmapping");
 
                 /***********
                  * Schema
@@ -130,7 +127,7 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
                 String[] keyUnits = { "Minutes|1", "Hours|2", "Days|3", "Workdays|4" };
                 // String[] timeFields = itemTimeMapping.getLabelsArray();
 
-                String[] timeFields = timeItemDefs.toArray(String[]::new);
+                String[] timeFields = timeFieldMapper.getItemDefinitions().toArray(String[]::new);
                 schemaBuilder //
                                 .addProperty("keyscheduledactivity", "string", "", enabledOption)
                                 .addProperty("numactivitydelay", "string", "") //

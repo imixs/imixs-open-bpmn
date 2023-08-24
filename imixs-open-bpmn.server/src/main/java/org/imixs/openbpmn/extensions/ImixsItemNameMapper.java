@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 public class ImixsItemNameMapper {
     List<String> labels = null;
     List<String> values = null;
+    List<String> itemDefinitions = null;
 
     private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
@@ -44,10 +45,10 @@ public class ImixsItemNameMapper {
 
         // resolve Item References and store the parts in object lists
         Element definitionsElementNode = model.getDefinitions();
-        List<String> itemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode, fieldMapping);
+        itemDefinitions = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode, fieldMapping);
         labels = new ArrayList<String>();
         values = new ArrayList<String>();
-        for (String _itemDef : itemDefs) {
+        for (String _itemDef : itemDefinitions) {
             String[] defParts = _itemDef.split("\\|");
             if (defParts.length > 1) {
                 labels.add(defParts[0].trim());
@@ -60,12 +61,31 @@ public class ImixsItemNameMapper {
 
     }
 
+    /**
+     * Returns the label list
+     * 
+     * @return
+     */
     public List<String> getLabels() {
         return labels;
     }
 
+    /**
+     * Returns the value list
+     * 
+     * @return
+     */
     public List<String> getValues() {
         return values;
+    }
+
+    /**
+     * Returns the ItemDefinition list containing label|value
+     * 
+     * @return
+     */
+    public List<String> getItemDefinitions() {
+        return itemDefinitions;
     }
 
     /**

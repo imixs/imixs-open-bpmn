@@ -38,12 +38,7 @@ public class ImixsExtensionACLHelper {
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
-
-        // fetch the actorItem definitions from the model definition
-        List<String> actorItemDefsValues = ImixsExtensionUtil.getDefinitionsElementList(model,
-                "txtfieldmapping", true);
-        List<String> actorItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
-                "txtfieldmapping", false);
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
 
         /***********
          * Data
@@ -57,12 +52,12 @@ public class ImixsExtensionACLHelper {
                                 "keyupdateacl", "false")) //
                 .addDataList("keyownershipfields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                "keyownershipfields", actorItemDefsValues)) //
+                                                        "keyownershipfields", actorFieldMapper.getValues())) //
                 .addDataList("keyaddreadfields", ImixsExtensionUtil.getItemValueList(model, elementNode,
-                        "keyaddreadfields", actorItemDefsValues))
+                                        "keyaddreadfields", actorFieldMapper.getValues()))
                 .addDataList("keyaddwritefields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                "keyaddwritefields", actorItemDefsValues)) //
+                                                        "keyaddwritefields", actorFieldMapper.getValues())) //
                 .addData("namownershipnames",
                         String.join(System.lineSeparator(),
                                 ImixsExtensionUtil.getItemValueList(model, elementNode,
@@ -81,7 +76,7 @@ public class ImixsExtensionACLHelper {
          */
         String[] enabledOption = { "Yes|true", "No|false" };
 
-        String[] actorItemDefsArray = actorItemDefs.toArray(String[]::new);
+        String[] actorItemDefsArray = actorFieldMapper.getItemDefinitions().toArray(String[]::new);
         schemaBuilder //
                 .addProperty("keyupdateacl", "string", "", enabledOption) //
                 .addProperty("keyownershipfields", "string", "", actorItemDefsArray) //
@@ -107,7 +102,7 @@ public class ImixsExtensionACLHelper {
                 .addCategory("ACL") //
                 .addLayout(Layout.HORIZONTAL) //
                 .addElement("keyupdateacl", "Active", selectHorizontal);
-        if (actorItemDefs != null && actorItemDefs.size() > 0) {
+        if (actorFieldMapper.getItemDefinitions() != null && actorFieldMapper.getItemDefinitions().size() > 0) {
             uiSchemaBuilder //
                     .addLayout(Layout.HORIZONTAL) //
                     .addElement("keyownershipfields", "Owner", selectVertical)
@@ -132,9 +127,7 @@ public class ImixsExtensionACLHelper {
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
-        // fetch the actorItem definitions from the model definition
-        List<String> actorItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
-                "txtfieldmapping", true);
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
 
         // base settings
         ImixsExtensionUtil.setItemValue(model, elementNode, "keyupdateacl", "xs:string",
@@ -156,7 +149,7 @@ public class ImixsExtensionACLHelper {
                 keyBaseObject.add(jsonStringValue);
             }
             ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject,
-                    actorItemDefs);
+                            actorFieldMapper.getValues());
         }
 
         // Set the other names.

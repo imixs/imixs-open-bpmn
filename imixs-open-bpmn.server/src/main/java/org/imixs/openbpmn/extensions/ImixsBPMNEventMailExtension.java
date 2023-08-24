@@ -100,11 +100,8 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
-        // fetch the actorItem definitions from the model definition
-        List<String> actorItemDefsValues = ImixsExtensionUtil.getDefinitionsElementList(model,
-                        "txtfieldmapping", true);
-        List<String> actorItemDefs = ImixsExtensionUtil.getDefinitionsElementList(model,
-                        "txtfieldmapping", false);
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
+
         /***********
          * Data
          */
@@ -117,13 +114,13 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                                 "rtfmailbody")) //
                 .addDataList("keymailreceiverfields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                                        "keymailreceiverfields", actorItemDefsValues)) //
+                                "keymailreceiverfields", actorFieldMapper.getValues())) //
                 .addDataList("keymailreceiverfieldscc",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                                        "keymailreceiverfieldscc", actorItemDefsValues)) //
+                                "keymailreceiverfieldscc", actorFieldMapper.getValues())) //
                 .addDataList("keymailreceiverfieldsbcc",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                                        "keymailreceiverfieldsbcc", actorItemDefsValues)) //
+                                "keymailreceiverfieldsbcc", actorFieldMapper.getValues())) //
                 .addData("nammailreceiver", String.join(System.lineSeparator(),
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
                                 "nammailreceiver"))) //
@@ -140,7 +137,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
          */
 
 
-        String[] actorItemDefsArray = actorItemDefs.toArray(String[]::new);
+        String[] actorItemDefsArray = actorFieldMapper.getItemDefinitions().toArray(String[]::new);
         schemaBuilder //
                 .addProperty("txtmailsubject", "string", "") //
                 .addProperty("rtfmailbody", "string",
@@ -167,7 +164,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                 .addElement("txtmailsubject", "Subject", null) //
                 .addElement("rtfmailbody", "Body", this.getFileEditorOption());
 
-        if (actorItemDefs != null && actorItemDefs.size() > 0) {
+        if (actorFieldMapper.getItemDefinitions() != null && actorFieldMapper.getItemDefinitions().size() > 0) {
             uiSchemaBuilder //
                     .addLayout(Layout.HORIZONTAL) //
                     .addElement("keymailreceiverfields", "To", selectVertical)
@@ -197,9 +194,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
 
-        // fetch the actorItem definitions from the model definition
-        List<String> actorItemDefsValues = ImixsExtensionUtil.getDefinitionsElementList(model,
-                        "txtfieldmapping", true);
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
 
         // subject / body
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtmailsubject", "xs:string",
@@ -223,7 +218,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNExtension {
                 keyBaseObject.add(jsonStringValue);
             }
             ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject,
-                            actorItemDefsValues);
+                    actorFieldMapper.getValues());
         }
 
         // Set the other names.

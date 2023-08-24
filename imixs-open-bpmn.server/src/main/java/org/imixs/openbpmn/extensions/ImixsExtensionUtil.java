@@ -46,27 +46,29 @@ public class ImixsExtensionUtil {
      * @param itemName
      * @return
      */
-    public static List<String> getDefinitionsElementList(BPMNModel model, String itemName, boolean stripLabels) {
+    // public static List<String> getDefinitionsElementList(BPMNModel model, String
+    // itemName, boolean stripLabels) {
 
-        // fetch the actorItem definitions from the model definition
-        Element definitionsElementNode = model.getDefinitions();
-        List<String> itemDefValues = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
-                itemName);
+    // // fetch the actorItem definitions from the model definition
+    // Element definitionsElementNode = model.getDefinitions();
+    // List<String> itemDefValues = ImixsExtensionUtil.getItemValueList(model,
+    // definitionsElementNode,
+    // itemName);
 
-        if (stripLabels == false) {
-            return itemDefValues;
-        }
+    // if (stripLabels == false) {
+    // return itemDefValues;
+    // }
 
-        // strip the label part....
-        List<String> stripedList = new ArrayList<String>();
-        for (String value : itemDefValues) {
-            if (value.contains("|")) {
-                value = value.substring(value.indexOf("|") + 1).trim();
-            }
-            stripedList.add(value);
-        }
-        return stripedList;
-    }
+    // // strip the label part....
+    // List<String> stripedList = new ArrayList<String>();
+    // for (String value : itemDefValues) {
+    // if (value.contains("|")) {
+    // value = value.substring(value.indexOf("|") + 1).trim();
+    // }
+    // stripedList.add(value);
+    // }
+    // return stripedList;
+    // }
 
     /**
      * This method sets a imixs:item extension element.
