@@ -28,7 +28,6 @@ import org.eclipse.glsp.server.launch.DefaultCLIParser;
 import org.eclipse.glsp.server.launch.GLSPServerLauncher;
 import org.eclipse.glsp.server.launch.SocketGLSPServerLauncher;
 import org.eclipse.glsp.server.utils.LaunchUtil;
-import org.openbpmn.glsp.BPMNServerLauncher;
 
 public final class ImixsBPMNServerLauncher {
     private ImixsBPMNServerLauncher() {
@@ -38,8 +37,7 @@ public final class ImixsBPMNServerLauncher {
     public static void main(final String[] args) {
         try {
 
-            System.out.println("[Imixs-BPMN-Server] Version " + BPMNServerLauncher.getMavenProjectVersion()
-                    + "  (open-bpmn.server=" + getOpenBPMNServerVersion() + ")");
+            System.out.println("[Imixs-BPMN-Server] Starting.... ");
             DefaultCLIParser cliParser = new DefaultCLIParser(args, "bpmn server");
             LaunchUtil.configure(cliParser);
             int port = cliParser.parsePort();

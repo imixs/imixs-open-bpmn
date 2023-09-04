@@ -17,11 +17,9 @@ package org.imixs.openbpmn.extensions;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 
-import org.eclipse.glsp.graph.GLabel;
 import org.eclipse.glsp.graph.GModelElement;
 import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.BPMNTypes;
@@ -32,7 +30,6 @@ import org.openbpmn.glsp.jsonforms.DataBuilder;
 import org.openbpmn.glsp.jsonforms.SchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.openbpmn.glsp.jsonforms.UISchemaBuilder.Layout;
-import org.openbpmn.glsp.utils.BPMNGModelUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -42,8 +39,6 @@ import org.w3c.dom.Element;
  *
  */
 public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
-
-    private static Logger logger = Logger.getLogger(ImixsBPMNTaskExtension.class.getName());
 
     public ImixsBPMNTaskExtension() {
         super();
@@ -91,11 +86,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
         if (bpmnElement instanceof Activity) {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
 
-        }
-
-        // if (bpmnElement instanceof Event) {
-        // bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
-        // }
+    }
     }
 
     /**
@@ -201,11 +192,8 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
         if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid",
                     json.getString("processid", "0"));
-            // update gNode...
-            GLabel label = BPMNGModelUtil.findExtensionLabel((BPMNGNode) gNodeElement);
-            if (label != null) {
-                label.setText("Id: " + newTaskId);
-            }
+            // update gNode info attribute...
+            gNodeElement.getArgs().put("bpmnExtensionInfo", "Id: " + newTaskId);
         }
 
         ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
