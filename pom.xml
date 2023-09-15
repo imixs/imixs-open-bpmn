@@ -152,7 +152,7 @@
 		</plugins>
 	</reporting>
 	
-<profiles>
+	<profiles>
 		<!-- Activate using the release property -->
 		<profile>
 			<id>release</id>
