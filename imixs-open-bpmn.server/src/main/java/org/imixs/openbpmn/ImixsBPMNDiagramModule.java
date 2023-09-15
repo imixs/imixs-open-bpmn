@@ -77,7 +77,9 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
      *
      * @param binding
      */
+    @Override
     public void configureBPMNModelExtensions(final Multibinder<BPMNModelExtension> binding) {
+        super.configureBPMNModelExtensions(binding);
         // bind Imixs model extensions
         binding.addBinding().to(ActorValidatorExtension.class);
 
