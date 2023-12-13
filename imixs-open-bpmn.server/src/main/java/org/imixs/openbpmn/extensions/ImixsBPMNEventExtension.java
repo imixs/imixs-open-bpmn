@@ -107,6 +107,7 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
 
         /***********
          * Data
@@ -118,7 +119,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 .addData("keypublicresult",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult", "1")) //
                 .addDataList("keyrestrictedvisibility",
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyrestrictedvisibility")) //
+                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyrestrictedvisibility",
+                                actorFieldMapper.getValues())) //
                 .addData("$readaccess", String.join(System.lineSeparator(),
                         ImixsExtensionUtil.getItemValueList(model, elementNode, "$readaccess")));
 
@@ -182,21 +184,15 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
         BPMNModel model = bpmnElement.getModel();
         Element elementNode = bpmnElement.getElementNode();
-
-        // fetch the actorItem definitions from the model definition
-        Element definitionsElementNode = model.getDefinitions();
-        List<String> actorItemDefs = ImixsExtensionUtil.getItemValueList(model, definitionsElementNode,
-                "txtfieldmapping");
+        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
 
         bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
                 json.getString("activityid", "0"));
         ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
                 json.getString("txtactivityresult", ""));
-
         ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string",
                 json.getString("keypublicresult", "1"));
 
-        // keyrestrictedvisibility
         JsonArray valueArray = json.getJsonArray("keyrestrictedvisibility");
         List<String> keyBaseObject = new ArrayList<>(valueArray.size());
         for (JsonValue value : valueArray) {
@@ -204,7 +200,7 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
             keyBaseObject.add(jsonStringValue);
         }
         ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string", keyBaseObject,
-                actorItemDefs);
+                actorFieldMapper.getValues());
 
         // $readAccess
         String otherValue = json.getString("$readaccess", "");
