@@ -1,24 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.imixs.bpmn</groupId>
 		<artifactId>imixs-open-bpmn</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>imixs-open-bpmn.server</artifactId>
 	<name>Imixs Open BPMN - Server</name>
 	<description>The Imixs Open BPMN - Server Extension</description>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.source>11</java.source>
-		<java.target>11</java.target>
-	</properties>
+
 
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.8.1</version>
 				<configuration>
 					<source>${java.source}</source>
 					<target>${java.target}</target>
@@ -42,11 +40,12 @@
 						<version>3.2.4</version>
 						<configuration>
 							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>org.imixs.openbpmn.ImixsBPMNServerLauncher</mainClass>
 									<manifestEntries>
 										<Multi-Release>true</Multi-Release>
-									</manifestEntries>	
+									</manifestEntries>
 								</transformer>
 							</transformers>
 							<artifactSet>
@@ -55,7 +54,7 @@
 									<exclude>javax.websocket:javax.websocket-api</exclude>
 									<exclude>log4j:log4j</exclude>
 								</excludes>
-							</artifactSet>							
+							</artifactSet>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -64,10 +63,14 @@
 										<exclude>META-INF/DEPENDENCIES</exclude>
 										<exclude>META-INF/ECLIPSE_*</exclude>
 										<exclude>META-INF/LICENSE*</exclude>
-										<exclude>META-INF/services/javax.servlet.ServletContainerInitializer</exclude>
-										<exclude>META-INF/services/jakarta.servlet.ServletContainerInitializer*</exclude>
-										<exclude>META-INF/services/org.eclipse.jetty.webapp.Configuration*</exclude>
-										<exclude>META-INF/services/org.eclipse.elk.core.data.ILayoutMetaDataProvider*</exclude>
+										<exclude>
+											META-INF/services/javax.servlet.ServletContainerInitializer</exclude>
+										<exclude>
+											META-INF/services/jakarta.servlet.ServletContainerInitializer*</exclude>
+										<exclude>
+											META-INF/services/org.eclipse.jetty.webapp.Configuration*</exclude>
+										<exclude>
+											META-INF/services/org.eclipse.elk.core.data.ILayoutMetaDataProvider*</exclude>
 										<exclude>META-INF/versions/9/module-info.class</exclude>
 										<exclude>META-INF/NOTICE*</exclude>
 										<exclude>.options</exclude>
@@ -125,6 +128,6 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.5.2</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
 </project>

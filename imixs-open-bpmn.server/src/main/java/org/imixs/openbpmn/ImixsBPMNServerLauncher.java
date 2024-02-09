@@ -17,34 +17,32 @@ package org.imixs.openbpmn;
 
 import org.apache.commons.cli.ParseException;
 import org.eclipse.glsp.server.di.ServerModule;
+import org.eclipse.glsp.server.launch.DefaultCLIParser;
 import org.eclipse.glsp.server.launch.GLSPServerLauncher;
 import org.eclipse.glsp.server.launch.SocketGLSPServerLauncher;
 import org.eclipse.glsp.server.utils.LaunchUtil;
-import org.eclipse.glsp.server.websocket.WebsocketServerLauncher;
-import org.openbpmn.glsp.launch.BPMNCLIParser;
-import org.openbpmn.glsp.launch.BPMNServerModule;
+import org.openbpmn.glsp.BPMNDiagramModule;
 
 public final class ImixsBPMNServerLauncher {
     private ImixsBPMNServerLauncher() {
     }
 
     public static void main(final String[] args) {
-       String processName = "open-bpmn.server-X.X.X-glsp.jar";
-      try {
-          BPMNCLIParser parser = new BPMNCLIParser(args, processName);
-          int port = parser.parsePort();
-          ServerModule bpmnServerModule = new BPMNServerModule()
-                  .configureDiagramModule(new ImixsBPMNDiagramModule());
+        String processName = "ImixsOpenBPMNServer";
+        try {
+            DefaultCLIParser parser = new DefaultCLIParser(args, processName);
+            LaunchUtil.configure(parser);
 
-         GLSPServerLauncher launcher = parser.isWebsocket()
-                 ? new WebsocketServerLauncher(bpmnServerModule, "/bpmn", parser.parseWebsocketLogLevel())
-                 : new SocketGLSPServerLauncher(bpmnServerModule);
+            int port = parser.parsePort();
+            ServerModule bpmnServerModule = new ServerModule()
+                    .configureDiagramModule(new BPMNDiagramModule());
 
-         launcher.start("localhost", port, parser);
-     } catch (ParseException ex) {
-         ex.printStackTrace();
-         System.out.println();
-         LaunchUtil.printHelp(processName, BPMNCLIParser.getDefaultOptions());
-     }
-  }
+            GLSPServerLauncher launcher = new SocketGLSPServerLauncher(bpmnServerModule);
+            launcher.start("localhost", port);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            LaunchUtil.printHelp(processName, DefaultCLIParser.getDefaultOptions());
+        }
+    }
+
 }
