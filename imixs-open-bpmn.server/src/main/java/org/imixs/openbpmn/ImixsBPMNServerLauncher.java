@@ -15,27 +15,35 @@
  ********************************************************************************/
 package org.imixs.openbpmn;
 
+import java.util.logging.Logger;
+
 import org.apache.commons.cli.ParseException;
 import org.eclipse.glsp.server.di.ServerModule;
 import org.eclipse.glsp.server.launch.DefaultCLIParser;
 import org.eclipse.glsp.server.launch.GLSPServerLauncher;
 import org.eclipse.glsp.server.launch.SocketGLSPServerLauncher;
 import org.eclipse.glsp.server.utils.LaunchUtil;
-import org.openbpmn.glsp.BPMNDiagramModule;
+import org.openbpmn.glsp.launch.BPMNServerLauncher;
 
 public final class ImixsBPMNServerLauncher {
+    private static Logger logger = Logger.getLogger(BPMNServerLauncher.class.getName());
+
     private ImixsBPMNServerLauncher() {
     }
 
     public static void main(final String[] args) {
         String processName = "ImixsOpenBPMNServer";
         try {
+            logger.info("***************************");
+            logger.info("* Launch " + processName);
+            logger.info("***************************");
+
             DefaultCLIParser parser = new DefaultCLIParser(args, processName);
             LaunchUtil.configure(parser);
 
             int port = parser.parsePort();
             ServerModule bpmnServerModule = new ServerModule()
-                    .configureDiagramModule(new BPMNDiagramModule());
+                    .configureDiagramModule(new ImixsBPMNDiagramModule());
 
             GLSPServerLauncher launcher = new SocketGLSPServerLauncher(bpmnServerModule);
             launcher.start("localhost", port);
