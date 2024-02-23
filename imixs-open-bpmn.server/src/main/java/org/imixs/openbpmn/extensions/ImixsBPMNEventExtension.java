@@ -122,7 +122,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                         ImixsExtensionUtil.getItemValueList(model, elementNode, "keyrestrictedvisibility",
                                 actorFieldMapper.getValues())) //
                 .addData("$readaccess", String.join(System.lineSeparator(),
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "$readaccess")));
+                        ImixsExtensionUtil.getItemValueList(model, elementNode, "$readaccess"))) //
+                .addData("txtreportname", ImixsExtensionUtil.getItemValueString(model, elementNode, "txtreportname"));
 
         /***********
          * Schema
@@ -140,7 +141,9 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 .addProperty("keypublicresult", "string", "Show Event as an Action in the Application UI",
                         publicEventOptions) //
                 .addProperty("keyrestrictedvisibility", "string", "", actorItemDefsArray) //
-                .addProperty("$readaccess", "string", "Add multiple entries in separate lines.");
+                .addProperty("$readaccess", "string", "Add multiple entries in separate lines.") //
+                .addProperty("txtreportname", "string",
+                        "Define an optional report definition. A report definition can be processed by pluign or adapter classes. ");
 
         /***********
          * UISchema
@@ -166,6 +169,10 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         }
 
         uiSchemaBuilder.addElement("$readaccess", "Restrict Read Access", multilineOption);
+
+        uiSchemaBuilder //
+                .addLayout(Layout.HORIZONTAL) //
+                .addElement("txtreportname", "Report", null);
 
     }
 
@@ -212,6 +219,10 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
             ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
                     Arrays.asList(lines), null);
         }
+
+        // Report
+        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
+                json.getString("txtreportname", ""));
     }
 
 }
