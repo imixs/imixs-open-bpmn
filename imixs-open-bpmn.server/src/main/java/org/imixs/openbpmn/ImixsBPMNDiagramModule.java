@@ -23,6 +23,7 @@ import org.imixs.openbpmn.extensions.ImixsBPMNEventACLExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventHistoryExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventMailExtension;
+import org.imixs.openbpmn.extensions.ImixsBPMNEventReportExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventRuleExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventSchedulerExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskACLExtension;
@@ -67,6 +68,7 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
         binding.addBinding().to(ImixsBPMNEventSchedulerExtension.class);
         binding.addBinding().to(ImixsBPMNEventACLExtension.class);
         binding.addBinding().to(ImixsBPMNEventMailExtension.class);
+        binding.addBinding().to(ImixsBPMNEventReportExtension.class);
 
     }
 

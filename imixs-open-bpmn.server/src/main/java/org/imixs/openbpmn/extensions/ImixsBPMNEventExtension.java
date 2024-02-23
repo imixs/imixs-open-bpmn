@@ -115,15 +115,18 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
         dataBuilder //
                 .addData("activityid", bpmnElement.getExtensionAttribute(getNamespace(), "activityid")) //
                 .addData("txtactivityresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtactivityresult")) //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "txtactivityresult")) //
                 .addData("keypublicresult",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "keypublicresult", "1")) //
+                        ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                "keypublicresult", "1")) //
                 .addDataList("keyrestrictedvisibility",
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "keyrestrictedvisibility",
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "keyrestrictedvisibility",
                                 actorFieldMapper.getValues())) //
                 .addData("$readaccess", String.join(System.lineSeparator(),
-                        ImixsExtensionUtil.getItemValueList(model, elementNode, "$readaccess"))) //
-                .addData("txtreportname", ImixsExtensionUtil.getItemValueString(model, elementNode, "txtreportname"));
+                        ImixsExtensionUtil.getItemValueList(model, elementNode,
+                                "$readaccess")));
 
         /***********
          * Schema
@@ -138,12 +141,11 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 .addProperty("activityid", "string", null) //
                 .addProperty("txtactivityresult", "string",
                         "Optional Execution Result. Additional item values can be defined here. ") //
-                .addProperty("keypublicresult", "string", "Show Event as an Action in the Application UI",
+                .addProperty("keypublicresult", "string",
+                        "Show Event as an Action in the Application UI",
                         publicEventOptions) //
                 .addProperty("keyrestrictedvisibility", "string", "", actorItemDefsArray) //
-                .addProperty("$readaccess", "string", "Add multiple entries in separate lines.") //
-                .addProperty("txtreportname", "string",
-                        "Define an optional report definition. A report definition can be processed by pluign or adapter classes. ");
+                .addProperty("$readaccess", "string", "Add multiple entries in separate lines.");
 
         /***********
          * UISchema
@@ -165,14 +167,11 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
 
         uiSchemaBuilder.addLayout(Layout.HORIZONTAL); //
         if (actorItemDefs != null && actorItemDefs.size() > 0) {
-            uiSchemaBuilder.addElement("keyrestrictedvisibility", "Restrict Visibility to Actors", selectVertical);
+            uiSchemaBuilder.addElement("keyrestrictedvisibility", "Restrict Visibility to Actors",
+                    selectVertical);
         }
 
         uiSchemaBuilder.addElement("$readaccess", "Restrict Read Access", multilineOption);
-
-        uiSchemaBuilder //
-                .addLayout(Layout.HORIZONTAL) //
-                .addElement("txtreportname", "Report", null);
 
     }
 
@@ -206,7 +205,8 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
             String jsonStringValue = ((JsonString) value).getString();
             keyBaseObject.add(jsonStringValue);
         }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string", keyBaseObject,
+        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string",
+                keyBaseObject,
                 actorFieldMapper.getValues());
 
         // $readAccess
@@ -220,9 +220,6 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                     Arrays.asList(lines), null);
         }
 
-        // Report
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
-                json.getString("txtreportname", ""));
     }
 
 }
