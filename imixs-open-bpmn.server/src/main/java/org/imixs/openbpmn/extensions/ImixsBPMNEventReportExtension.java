@@ -149,27 +149,25 @@ public class ImixsBPMNEventReportExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"Report".equals(category)) {
-            return;
+        if ("Report".equals(category)) {
+            BPMNModel model = bpmnElement.getModel();
+            Element elementNode = bpmnElement.getElementNode();
+
+            // Report
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
+                    json.getString("txtreportname", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportfilepath", "xs:string",
+                    json.getString("txtreportfilepath", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportoptions", "xs:string",
+                    json.getString("txtreportoptions", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreporttarget", "xs:string",
+                    json.getString("txtreporttarget", ""));
         }
-
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
-
-        // Report
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
-                json.getString("txtreportname", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportfilepath", "xs:string",
-                json.getString("txtreportfilepath", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportoptions", "xs:string",
-                json.getString("txtreportoptions", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreporttarget", "xs:string",
-                json.getString("txtreporttarget", ""));
-
+        return false;
     }
 
 }

@@ -180,45 +180,46 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"Workflow".equals(category)) {
-            return;
+        if ("Workflow".equals(category)) {
+
+            BPMNModel model = bpmnElement.getModel();
+            Element elementNode = bpmnElement.getElementNode();
+            ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
+
+            bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
+                    json.getString("activityid", "0"));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
+                    json.getString("txtactivityresult", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string",
+                    json.getString("keypublicresult", "1"));
+
+            JsonArray valueArray = json.getJsonArray("keyrestrictedvisibility");
+            List<String> keyBaseObject = new ArrayList<>(valueArray.size());
+            for (JsonValue value : valueArray) {
+                String jsonStringValue = ((JsonString) value).getString();
+                keyBaseObject.add(jsonStringValue);
+            }
+            ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string",
+                    keyBaseObject,
+                    actorFieldMapper.getValues());
+
+            // $readAccess
+            String otherValue = json.getString("$readaccess", "");
+            if (otherValue.trim().isEmpty()) {
+                // remove $readaccess (see https://github.com/imixs/imixs-workflow/issues/832)
+                ImixsExtensionUtil.removeItemValue(model, elementNode, "$readaccess");
+            } else {
+                String[] lines = otherValue.split(System.lineSeparator());
+                ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
+                        Arrays.asList(lines), null);
+            }
         }
 
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
-        ImixsItemNameMapper actorFieldMapper = new ImixsItemNameMapper(model, "txtfieldmapping");
-
-        bpmnElement.setExtensionAttribute(getNamespace(), "activityid",
-                json.getString("activityid", "0"));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtactivityresult", "xs:string",
-                json.getString("txtactivityresult", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "keypublicresult", "xs:string",
-                json.getString("keypublicresult", "1"));
-
-        JsonArray valueArray = json.getJsonArray("keyrestrictedvisibility");
-        List<String> keyBaseObject = new ArrayList<>(valueArray.size());
-        for (JsonValue value : valueArray) {
-            String jsonStringValue = ((JsonString) value).getString();
-            keyBaseObject.add(jsonStringValue);
-        }
-        ImixsExtensionUtil.setItemValueList(model, elementNode, "keyrestrictedvisibility", "xs:string",
-                keyBaseObject,
-                actorFieldMapper.getValues());
-
-        // $readAccess
-        String otherValue = json.getString("$readaccess", "");
-        if (otherValue.trim().isEmpty()) {
-            // remove $readaccess (see https://github.com/imixs/imixs-workflow/issues/832)
-            ImixsExtensionUtil.removeItemValue(model, elementNode, "$readaccess");
-        } else {
-            String[] lines = otherValue.split(System.lineSeparator());
-            ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
-                    Arrays.asList(lines), null);
-        }
+        return false;
 
     }
 

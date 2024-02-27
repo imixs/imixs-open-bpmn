@@ -116,7 +116,7 @@ public class ImixsBPMNEventRuleExtension extends ImixsBPMNExtension {
         uiSchemaBuilder //
                 .addCategory("Business Rule") //
                 .addElement("txtbusinessruleengine", "Engine", null) //
-                .addElement("txtbusinessrule", "Rule", this.getFileEditorOption()); //
+                .addElement("txtbusinessrule", "Rule", this.getFileEditorOption());
 
     }
 
@@ -125,22 +125,21 @@ public class ImixsBPMNEventRuleExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"Business Rule".equals(category)) {
-            return;
+        if ("Business Rule".equals(category)) {
+            BPMNModel model = bpmnElement.getModel();
+            Element elementNode = bpmnElement.getElementNode();
+
+            // Rules
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessruleengine", "xs:string",
+                    json.getString("txtbusinessruleengine", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessrule", "xs:string",
+                    json.getString("txtbusinessrule", ""));
         }
-
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
-
-        // Rules
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessruleengine", "xs:string",
-                json.getString("txtbusinessruleengine", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtbusinessrule", "xs:string",
-                json.getString("txtbusinessrule", ""));
+        return false;
     }
 
 }

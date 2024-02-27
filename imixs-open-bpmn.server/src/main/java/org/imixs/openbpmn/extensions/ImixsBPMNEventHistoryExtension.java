@@ -94,28 +94,23 @@ public class ImixsBPMNEventHistoryExtension extends ImixsBPMNExtension {
          * Data
          */
         dataBuilder //
-
                 .addData("rtfresultlog",
                         ImixsExtensionUtil.getItemValueString(model, elementNode, "rtfresultlog")); //
 
         /***********
          * Schema
          */
-
         schemaBuilder //
-
                 .addProperty("rtfresultlog", "string", "");
+
         /***********
          * UISchema
          */
-
         Map<String, String> multilineOption = new HashMap<>();
         multilineOption.put("multi", "true");
         uiSchemaBuilder //
-
                 .addCategory("History") //
-                .addElement("rtfresultlog", "Log Entry", multilineOption) //
-        ; //
+                .addElement("rtfresultlog", "Log Entry", multilineOption);
 
     }
 
@@ -124,20 +119,17 @@ public class ImixsBPMNEventHistoryExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
-        if (!"History".equals(category)) {
-            return;
+        if ("History".equals(category)) {
+            BPMNModel model = bpmnElement.getModel();
+            Element elementNode = bpmnElement.getElementNode();
+            ImixsExtensionUtil.setItemValue(model, elementNode, "rtfresultlog", "xs:string",
+                    json.getString("rtfresultlog", ""));
         }
-
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
-
-        ImixsExtensionUtil.setItemValue(model, elementNode, "rtfresultlog", "xs:string",
-                json.getString("rtfresultlog", ""));
-
+        return false;
     }
 
 }

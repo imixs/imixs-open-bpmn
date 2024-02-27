@@ -93,13 +93,14 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
      * This method updates the BPMN properties
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and History
         if ("ACL".equals(category)) {
             ImixsExtensionACLHelper.updatePropertiesData(json, category, bpmnElement, gNodeElement);
         }
+        return false;
 
     }
 

@@ -86,7 +86,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
         if (bpmnElement instanceof Activity) {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
 
-    }
+        }
     }
 
     /**
@@ -177,37 +177,37 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
      * The processID is also updated for the frontend.
      */
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and App
-        if (!"Workflow".equals(category) && !"App".equals(category)) {
-            return;
-        }
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
+        if ("Workflow".equals(category) && !"App".equals(category)) {
+            BPMNModel model = bpmnElement.getModel();
+            Element elementNode = bpmnElement.getElementNode();
 
-        String oldTaskId = bpmnElement.getExtensionAttribute(getNamespace(), "processid");
-        String newTaskId = json.getString("processid", "0");
-        if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
-            bpmnElement.setExtensionAttribute(getNamespace(), "processid",
-                    json.getString("processid", "0"));
-            // update gNode info attribute...
-            gNodeElement.getArgs().put("bpmnExtensionInfo", "Id: " + newTaskId);
-        }
+            String oldTaskId = bpmnElement.getExtensionAttribute(getNamespace(), "processid");
+            String newTaskId = json.getString("processid", "0");
+            if (gNodeElement instanceof BPMNGNode && !newTaskId.equals(oldTaskId)) {
+                bpmnElement.setExtensionAttribute(getNamespace(), "processid",
+                        json.getString("processid", "0"));
+                // update gNode info attribute...
+                gNodeElement.getArgs().put("bpmnExtensionInfo", "Id: " + newTaskId);
+            }
 
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
-                json.getString("txttype", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
-                json.getString("txtimageurl", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowsummary", "xs:string",
-                json.getString("txtworkflowsummary", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowabstract", "xs:string",
-                json.getString("txtworkflowabstract", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "txteditorid", "xs:string",
-                json.getString("txteditorid", ""));
-        ImixsExtensionUtil.setItemValue(model, elementNode, "form.definition", "xs:string",
-                json.getString("form_definition", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txttype", "xs:string",
+                    json.getString("txttype", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtimageurl", "xs:string",
+                    json.getString("txtimageurl", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowsummary", "xs:string",
+                    json.getString("txtworkflowsummary", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txtworkflowabstract", "xs:string",
+                    json.getString("txtworkflowabstract", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "txteditorid", "xs:string",
+                    json.getString("txteditorid", ""));
+            ImixsExtensionUtil.setItemValue(model, elementNode, "form.definition", "xs:string",
+                    json.getString("form_definition", ""));
+        }
+        return false;
 
     }
 

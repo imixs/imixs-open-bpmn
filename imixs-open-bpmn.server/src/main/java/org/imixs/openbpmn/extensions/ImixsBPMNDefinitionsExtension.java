@@ -169,11 +169,11 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
     }
 
     @Override
-    public void updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
         // we are only interested in category Workflow
         if (!"Workflow".equals(category)) {
-            return;
+            return false;
         }
 
         // find the definitions element
@@ -293,6 +293,7 @@ public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
         }
 
         // update completed
+        return false;
     }
 
 }

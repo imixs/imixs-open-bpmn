@@ -52,12 +52,12 @@ public class ImixsExtensionACLHelper {
                                 "keyupdateacl", "false")) //
                 .addDataList("keyownershipfields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                                        "keyownershipfields", actorFieldMapper.getValues())) //
+                                "keyownershipfields", actorFieldMapper.getValues())) //
                 .addDataList("keyaddreadfields", ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                        "keyaddreadfields", actorFieldMapper.getValues()))
+                        "keyaddreadfields", actorFieldMapper.getValues()))
                 .addDataList("keyaddwritefields",
                         ImixsExtensionUtil.getItemValueList(model, elementNode,
-                                                        "keyaddwritefields", actorFieldMapper.getValues())) //
+                                "keyaddwritefields", actorFieldMapper.getValues())) //
                 .addData("namownershipnames",
                         String.join(System.lineSeparator(),
                                 ImixsExtensionUtil.getItemValueList(model, elementNode,
@@ -149,7 +149,7 @@ public class ImixsExtensionACLHelper {
                 keyBaseObject.add(jsonStringValue);
             }
             ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string", keyBaseObject,
-                            actorFieldMapper.getValues());
+                    actorFieldMapper.getValues());
         }
 
         // Set the other names.
