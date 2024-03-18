@@ -284,7 +284,7 @@ public class ImixsExtensionUtil {
     /**
      * This helper method returns a value list of all imixs:value elements of an
      * imixs:item by a given name.
-     * If no extensionElement exists, or no imxis:item with the itemName exists,
+     * If no extensionElement exists, or no imixs:item with the itemName exists,
      * than the method returns an empty List
      * 
      * The method also avoids duplicates as this can of course not be handled by the

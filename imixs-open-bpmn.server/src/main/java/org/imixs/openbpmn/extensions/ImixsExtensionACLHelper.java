@@ -159,7 +159,9 @@ public class ImixsExtensionACLHelper {
         String[] nameProperties = { "namownershipnames", "namaddreadaccess", "namaddwriteaccess" };
         for (String property : nameProperties) {
             String otherValue = json.getString(property, "");
-            String[] lines = otherValue.split(System.lineSeparator());
+            // String[] lines = otherValue.split(System.lineSeparator());
+            // See: https://github.com/imixs/imixs-open-bpmn/issues/24
+            String[] lines = otherValue.split("\\R");
             ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string",
                     Arrays.asList(lines), null);
         }

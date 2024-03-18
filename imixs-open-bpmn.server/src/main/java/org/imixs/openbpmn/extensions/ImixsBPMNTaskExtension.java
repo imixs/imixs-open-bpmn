@@ -181,7 +181,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
             final GModelElement gNodeElement) {
 
         // we are only interested in category Workflow and App
-        if ("Workflow".equals(category) && !"App".equals(category)) {
+        if ("Workflow".equals(category) || "App".equals(category)) {
             BPMNModel model = bpmnElement.getModel();
             Element elementNode = bpmnElement.getElementNode();
 

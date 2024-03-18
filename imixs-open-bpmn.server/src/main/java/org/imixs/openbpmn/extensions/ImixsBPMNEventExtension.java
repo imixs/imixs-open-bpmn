@@ -213,7 +213,9 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
                 // remove $readaccess (see https://github.com/imixs/imixs-workflow/issues/832)
                 ImixsExtensionUtil.removeItemValue(model, elementNode, "$readaccess");
             } else {
-                String[] lines = otherValue.split(System.lineSeparator());
+                // String[] lines = otherValue.split(System.lineSeparator());
+                // See: https://github.com/imixs/imixs-open-bpmn/issues/24
+                String[] lines = otherValue.split("\\R");
                 ImixsExtensionUtil.setItemValueList(model, elementNode, "$readaccess", "xs:string",
                         Arrays.asList(lines), null);
             }
