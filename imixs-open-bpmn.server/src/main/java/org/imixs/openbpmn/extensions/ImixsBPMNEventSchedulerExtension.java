@@ -106,7 +106,7 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
 								"numactivitydelay")) //
 				.addData("keyactivitydelayunit",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
-								"keyactivitydelayunit")) //
+								"keyactivitydelayunit", "1")) //
 				.addData("keyscheduledbaseobject",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
 								"keyscheduledbaseobject")) //
@@ -176,24 +176,33 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
 			Element elementNode = bpmnElement.getElementNode();
 
 			// base settings
-
 			ImixsExtensionUtil.setItemValue(model, elementNode, "txtscheduledview", "xs:string",
 					json.getString("txtscheduledview", ""));
+			ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string",
+					json.getString("keyscheduledactivity", "0"));
 			ImixsExtensionUtil.setItemValue(model, elementNode, "numactivitydelay", "xs:string",
 					json.getString("numactivitydelay", ""));
 
-			ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string",
-					json.getString("keyscheduledactivity", "0"));
-
+			// Base object
+			String newValue = json.getString("keyscheduledbaseobject", "1");
+			if (newValue == null || newValue.isEmpty()) {
+				newValue = "1";
+			}
 			ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledbaseobject", "xs:string",
-					json.getString("keyscheduledbaseobject", "1"));
+					newValue);
 
+			// delay unit
+			newValue = json.getString("keyactivitydelayunit", "1");
+			if (newValue == null || newValue.isEmpty()) {
+				newValue = "1";
+			}
 			ImixsExtensionUtil.setItemValue(model, elementNode, "keyactivitydelayunit", "xs:string",
-					json.getString("keyactivitydelayunit", "1"));
+					newValue);
 
 			// set timeCompare field
 			ImixsExtensionUtil.setItemValue(model, elementNode, "keytimecomparefield", "xs:string",
 					json.getString("keytimecomparefield", ""));
+
 		}
 		return false;
 	}
