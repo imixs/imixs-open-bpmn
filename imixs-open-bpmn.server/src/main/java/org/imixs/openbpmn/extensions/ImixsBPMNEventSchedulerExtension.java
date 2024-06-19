@@ -103,13 +103,13 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
 								"keyscheduledactivity", "0")) //
 				.addData("numactivitydelay",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
-								"numactivitydelay")) //
+								"numactivitydelay", "0")) //
 				.addData("keyactivitydelayunit",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
 								"keyactivitydelayunit", "1")) //
 				.addData("keyscheduledbaseobject",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
-								"keyscheduledbaseobject")) //
+								"keyscheduledbaseobject", "1")) //
 				.addData("keytimecomparefield",
 						ImixsExtensionUtil.getItemValueString(model, elementNode,
 								"keytimecomparefield")) //
@@ -181,7 +181,7 @@ public class ImixsBPMNEventSchedulerExtension extends ImixsBPMNExtension {
 			ImixsExtensionUtil.setItemValue(model, elementNode, "keyscheduledactivity", "xs:string",
 					json.getString("keyscheduledactivity", "0"));
 			ImixsExtensionUtil.setItemValue(model, elementNode, "numactivitydelay", "xs:string",
-					json.getString("numactivitydelay", ""));
+					json.getString("numactivitydelay", "0"));
 
 			// Base object
 			String newValue = json.getString("keyscheduledbaseobject", "1");

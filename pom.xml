@@ -78,7 +78,7 @@
 		<java.target>17</java.target>
 		<project.build.java.target>17</project.build.java.target>
 		<maven.compiler.release>17</maven.compiler.release>
-		<org.imixs.bpmn.version>1.2.1-SNAPSHOT</org.imixs.bpmn.version>
+		<org.imixs.openbpmn.version>1.2.1-SNAPSHOT</org.imixs.openbpmn.version>
 	</properties>
 
 	<build>
