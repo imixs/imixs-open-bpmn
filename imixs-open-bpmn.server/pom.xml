@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>org.imixs.bpmn</groupId>
 			<artifactId>open-bpmn.server</artifactId>
-			<version>${org.imixs.openbpmn.version}</version>
+			<version>${org.open-bpmn.server.version}</version>
 		</dependency>
 		<!-- JUnit Tests -->
 		<dependency>
