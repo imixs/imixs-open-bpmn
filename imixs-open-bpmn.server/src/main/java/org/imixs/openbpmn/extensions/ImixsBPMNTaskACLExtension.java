@@ -54,6 +54,7 @@ public class ImixsBPMNTaskACLExtension extends ImixsBPMNExtension {
         return (BPMNTypes.USER_TASK.equals(elementTypeId)
                 || BPMNTypes.TASK.equals(elementTypeId)
                 || BPMNTypes.USER_TASK.equals(elementTypeId)
+                || BPMNTypes.MANUAL_TASK.equals(elementTypeId)
                 || BPMNTypes.SCRIPT_TASK.equals(elementTypeId)
                 || BPMNTypes.BUSINESSRULE_TASK.equals(elementTypeId)
                 || BPMNTypes.SERVICE_TASK.equals(elementTypeId)
