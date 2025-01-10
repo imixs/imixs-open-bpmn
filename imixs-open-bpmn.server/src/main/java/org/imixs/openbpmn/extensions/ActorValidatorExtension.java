@@ -26,7 +26,7 @@ import org.openbpmn.bpmn.elements.core.BPMNElementNode;
 import org.openbpmn.extensions.BPMNModelExtension;
 
 /**
- * The ActorTimeFieldValidatorExtension validates all actor fieldmappings and
+ * The ActorValidatorExtension validates all actor fieldmappings and
  * in acl and mail message nodes on the load and save event.
  *
  * The validator automatically fixes wrong mappings and sets the isDirty flag on

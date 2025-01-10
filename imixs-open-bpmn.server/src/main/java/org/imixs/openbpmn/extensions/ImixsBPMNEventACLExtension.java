@@ -47,7 +47,7 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
     }
 
     /**
-     * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
+     * The ImixsBPMNTaskExtension can only be applied to a BPMN Cath Event element
      */
     @Override
     public boolean handlesElementTypeId(final String elementTypeId) {
@@ -58,7 +58,7 @@ public class ImixsBPMNEventACLExtension extends ImixsBPMNExtension {
      * This Extension is for BPMN Task Elements only
      * <p>
      * The method also verifies if the element has a imixs:processid attribute. This
-     * attribute is added in the 'addExtesnion' method call
+     * attribute is added in the 'addExtnsion' method call
      */
     @Override
     public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
