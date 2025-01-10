@@ -90,7 +90,6 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
      */
     @Override
     public void addExtension(final BPMNElement bpmnElement) {
-
         if (bpmnElement instanceof Event) {
             bpmnElement.setExtensionAttribute(getNamespace(), "activityid", "10");
         }

@@ -15,12 +15,16 @@
  ********************************************************************************/
 package org.imixs.openbpmn.extensions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.openbpmn.bpmn.BPMNModel;
 import org.openbpmn.bpmn.elements.core.BPMNElement;
 import org.openbpmn.extensions.BPMNElementExtension;
+import org.w3c.dom.Element;
 
 /**
  * This is the Default BPMNEvent extension providing the JSONForms shemata.
@@ -52,10 +56,57 @@ public abstract class ImixsBPMNExtension implements BPMNElementExtension {
     }
 
     /**
-     * This method adds a unique identifier to the corresponding BPMNElement
+     * This method adds a new Imixs Extension. The methoe is overwritten by the
+     * specific element extensions (Task and Event).
+     * 
+     * The method verifies if we already have default imixs properties for the
+     * process. If not this method will generate a default setup
+     * 
      */
     @Override
     public void addExtension(final BPMNElement bpmnElement) {
+        BPMNModel model = bpmnElement.getModel();
+        Element definitionsElement = model.getDefinitions();
+        if (definitionsElement != null) {
+
+            // Add a default model version if not yet set
+            String imixsModelVersion = ImixsExtensionUtil.getItemValueString(model, definitionsElement,
+                    "txtworkflowmodelversion");
+            if (imixsModelVersion.isEmpty()) {
+                ImixsExtensionUtil.setItemValue(model, definitionsElement, "txtworkflowmodelversion", "xs:string",
+                        "default-en-1.0");
+            }
+
+            // add default plugin list if not yet set
+            List<String> plugins = ImixsExtensionUtil.getItemValueList(model, definitionsElement, "txtplugins");
+            if (plugins.isEmpty()) {
+                plugins = new ArrayList<>();
+                plugins.add("org.imixs.workflow.engine.plugins.RulePlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.SplitAndJoinPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.OwnerPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.ApproverPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.HistoryPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.ApplicationPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.IntervalPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.MailPlugin");
+                plugins.add("org.imixs.workflow.engine.plugins.ResultPlugin");
+                ImixsExtensionUtil.setItemValueList(model, definitionsElement, "txtplugins",
+                        "xs:string", plugins, null);
+            }
+
+            // add default txtfieldmapping if not yet set
+            List<String> fieldMappings = ImixsExtensionUtil.getItemValueList(model, definitionsElement,
+                    "txtfieldmapping");
+            if (fieldMappings.isEmpty()) {
+                fieldMappings = new ArrayList<>();
+                fieldMappings.add("Creator|$creator");
+                fieldMappings.add("Owner|$owner");
+                fieldMappings.add("Editor|$editor");
+                ImixsExtensionUtil.setItemValueList(model, definitionsElement, "txtfieldmapping",
+                        "xs:string", fieldMappings, null);
+            }
+        }
+
     }
 
     /**

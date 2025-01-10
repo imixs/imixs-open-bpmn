@@ -85,7 +85,6 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
     public void addExtension(final BPMNElement bpmnElement) {
         if (bpmnElement instanceof Activity) {
             bpmnElement.setExtensionAttribute(getNamespace(), "processid", "100");
-
         }
     }
 
