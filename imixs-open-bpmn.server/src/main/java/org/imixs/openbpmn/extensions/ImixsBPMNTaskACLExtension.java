@@ -51,22 +51,27 @@ public class ImixsBPMNTaskACLExtension extends ImixsBPMNExtension {
      */
     @Override
     public boolean handlesElementTypeId(final String elementTypeId) {
-        return BPMNTypes.TASK.equals(elementTypeId);
+        return (BPMNTypes.USER_TASK.equals(elementTypeId)
+                || BPMNTypes.TASK.equals(elementTypeId)
+                || BPMNTypes.USER_TASK.equals(elementTypeId)
+                || BPMNTypes.SCRIPT_TASK.equals(elementTypeId)
+                || BPMNTypes.BUSINESSRULE_TASK.equals(elementTypeId)
+                || BPMNTypes.SERVICE_TASK.equals(elementTypeId)
+                || BPMNTypes.SEND_TASK.equals(elementTypeId)
+                || BPMNTypes.RECEIVE_TASK.equals(elementTypeId));
     }
 
     /**
      * This Extension is for BPMN Task Elements only
      * <p>
      * The method also verifies if the element has a imixs:processid attribute. This
-     * attribute is added in the 'addExtesnion' method call
+     * attribute is added in the 'addExtension' method call
      */
     @Override
     public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
-
         if (bpmnElement instanceof Activity) {
             Activity task = (Activity) bpmnElement;
-            if (task.getType().equals(BPMNTypes.TASK)) {
-                // next check the extension attribute imixs:processid
+            if (handlesElementTypeId(task.getType())) {
                 if (task.hasAttribute(getNamespace() + ":processid")) {
                     return true;
                 }
