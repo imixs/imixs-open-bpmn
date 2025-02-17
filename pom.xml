@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.bpmn</groupId>
 	<artifactId>imixs-open-bpmn</artifactId>
@@ -76,7 +78,7 @@
 		<java.target>17</java.target>
 		<project.build.java.target>17</project.build.java.target>
 		<maven.compiler.release>17</maven.compiler.release>
-		<org.open-bpmn.server.version>1.2.5</org.open-bpmn.server.version>
+		<org.open-bpmn.server.version>1.2.6-SNAPSHOT</org.open-bpmn.server.version>
 	</properties>
 
 	<build>
