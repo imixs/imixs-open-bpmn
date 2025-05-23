@@ -27,8 +27,11 @@ import org.openbpmn.extensions.BPMNElementExtension;
 import org.w3c.dom.Element;
 
 /**
- * This is the Default BPMNEvent extension providing the JSONForms shemata.
+ * This is the Default BPMNEvent extension providing the JSONForms schemata.
  *
+ * The class verifies if the model contains already the default imixs
+ * properties. If not this class will generate a default setup automatically.
+ * 
  * @author rsoika
  *
  */
@@ -56,7 +59,7 @@ public abstract class ImixsBPMNExtension implements BPMNElementExtension {
     }
 
     /**
-     * This method adds a new Imixs Extension. The methoe is overwritten by the
+     * This method adds a new Imixs Extension. The method is overwritten by the
      * specific element extensions (Task and Event).
      * 
      * The method verifies if we already have default imixs properties for the
