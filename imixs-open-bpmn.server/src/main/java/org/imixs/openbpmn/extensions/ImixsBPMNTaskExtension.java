@@ -178,7 +178,7 @@ public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
         }
 
         /**
-         * This method updates the BPMN properties and also the imixs processid.
+         * This method updates the BPMN properties and also the imixs processID.
          * The processID is also updated for the frontend.
          */
         @Override

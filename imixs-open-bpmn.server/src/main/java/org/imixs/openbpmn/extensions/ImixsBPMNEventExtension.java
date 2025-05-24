@@ -66,7 +66,7 @@ public class ImixsBPMNEventExtension extends ImixsBPMNExtension {
     }
 
     /**
-     * This Extension is for BPMN Task Elements only
+     * This Extension is for BPMN Event Elements only
      * <p>
      * The method also verifies if the element has a imixs:processid attribute. This
      * attribute is added in the 'addExtesnion' method call
