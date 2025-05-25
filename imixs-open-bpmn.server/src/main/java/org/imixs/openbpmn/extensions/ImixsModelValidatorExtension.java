@@ -163,6 +163,11 @@ public class ImixsModelValidatorExtension implements BPMNModelExtension {
                 process.init();
                 Set<DataObject> objects = process.getDataObjects();
                 for (DataObject dataObject : objects) {
+                    if (dataObject.hasExtensionAttribute(ImixsExtensionUtil.getNamespace(),
+                            ImixsBPMNDataObjectExtension.IMIXS_DATATYPE)) {
+                        // do not validate
+                        continue;
+                    }
                     // compute data type...
                     String oldDataType = dataObject.getExtensionAttribute(ImixsExtensionUtil.getNamespace(),
                             ImixsBPMNDataObjectExtension.IMIXS_DATATYPE);
@@ -172,6 +177,10 @@ public class ImixsModelValidatorExtension implements BPMNModelExtension {
                     try {
                         data = FileLinkExtension.readFileContent(element, path);
                         if (data == null) {
+                            // no external file data - so we try real content
+                            data = dataObject.getDocumentation();
+                        }
+                        if (data == null || data.isEmpty()) {
                             continue;
                         }
                         if (data.contains("<imixs-form")) {
