@@ -35,11 +35,11 @@ import org.w3c.dom.Element;
  * @author rsoika
  *
  */
-public abstract class ImixsBPMNExtension implements BPMNElementExtension {
+public abstract class ImixsBPMNElementExtension implements BPMNElementExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNExtension.class.getName());
+    private static Logger logger = Logger.getLogger(ImixsBPMNElementExtension.class.getName());
 
-    public ImixsBPMNExtension() {
+    public ImixsBPMNElementExtension() {
         super();
     }
 

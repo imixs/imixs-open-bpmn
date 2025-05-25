@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
  * @author rsoika
  *
  */
-public class ImixsBPMNEventHistoryExtension extends ImixsBPMNExtension {
+public class ImixsBPMNEventHistoryExtension extends ImixsBPMNElementExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNEventHistoryExtension.class.getName());
 

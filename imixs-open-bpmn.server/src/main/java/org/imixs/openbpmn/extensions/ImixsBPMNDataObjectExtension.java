@@ -28,12 +28,14 @@ import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
 import org.w3c.dom.Element;
 
 /**
- * This is the Imixs AI extension for Data Objects
+ * This is the Imixs AI extension for Data Objects. The extension reacts on
+ * updates of the 'document' attribute of a DataObject and computes the imixs
+ * dataType which can be 'form-data' or 'prompt-data'
  *
  * @author rsoika
  *
  */
-public class ImixsBPMNDataObjectExtension extends ImixsBPMNExtension {
+public class ImixsBPMNDataObjectExtension extends ImixsBPMNElementExtension {
 
     public static final String IMIXS_DATATYPE = "datatype";
 
@@ -105,12 +107,6 @@ public class ImixsBPMNDataObjectExtension extends ImixsBPMNExtension {
     public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
             final GModelElement gNodeElement) {
 
-        // exit if the imixs namespace doese not yet exists
-        // if (!bpmnElement.getModel().hasNamespace(getNamespace())) {
-        // // not supported - missing imixs namespace
-        // return false;
-        // }
-
         // no special tabs yet supported.
 
         // compute data type...
@@ -132,8 +128,6 @@ public class ImixsBPMNDataObjectExtension extends ImixsBPMNExtension {
 
         // If data type changed, rebuild view
         return (!dataType.equals(oldDataType));
-        // return false;
-
     }
 
     /**

@@ -39,6 +39,9 @@ public class ImixsItemNameMapper {
      */
     public ImixsItemNameMapper(final BPMNModel model, final String fieldMapping) {
 
+        if (model == null) {
+            return;
+        }
         if (!Arrays.asList(validFieldMappings).contains(fieldMapping)) {
             logger.severe("Unsupported field mapping - '" + fieldMapping + "'");
         }

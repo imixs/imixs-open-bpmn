@@ -49,7 +49,7 @@ import com.google.inject.Inject;
  * @author rsoika
  *
  */
-public class ImixsBPMNDefinitionsExtension extends ImixsBPMNExtension {
+public class ImixsBPMNDefinitionsExtension extends ImixsBPMNElementExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNDefinitionsExtension.class.getName());
 

@@ -33,7 +33,7 @@ import org.openbpmn.glsp.jsonforms.UISchemaBuilder;
  * @author rsoika
  *
  */
-public class ImixsBPMNTaskACLExtension extends ImixsBPMNExtension {
+public class ImixsBPMNTaskACLExtension extends ImixsBPMNElementExtension {
 
     private static Logger logger = Logger.getLogger(ImixsBPMNTaskACLExtension.class.getName());
 

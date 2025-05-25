@@ -48,126 +48,130 @@ import org.w3c.dom.Element;
  * @author rsoika
  *
  */
-public class ImixsBPMNEventReportExtension extends ImixsBPMNExtension {
+public class ImixsBPMNEventReportExtension extends ImixsBPMNElementExtension {
 
-    private static Logger logger = Logger.getLogger(ImixsBPMNEventRuleExtension.class.getName());
+        private static Logger logger = Logger.getLogger(ImixsBPMNEventRuleExtension.class.getName());
 
-    public ImixsBPMNEventReportExtension() {
-        super();
-    }
+        public ImixsBPMNEventReportExtension() {
+                super();
+        }
 
-    @Override
-    public int getPriority() {
-        return 1170;
-    }
+        @Override
+        public int getPriority() {
+                return 1170;
+        }
 
-    /**
-     * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
-     */
-    @Override
-    public boolean handlesElementTypeId(final String elementTypeId) {
-        return BPMNTypes.CATCH_EVENT.equals(elementTypeId);
-    }
+        /**
+         * The ImixsBPMNTaskExtension can only be applied to a BPMN Task element
+         */
+        @Override
+        public boolean handlesElementTypeId(final String elementTypeId) {
+                return BPMNTypes.CATCH_EVENT.equals(elementTypeId);
+        }
 
-    /**
-     * This Extension is for BPMN Task Elements only
-     * <p>
-     * The method also verifies if the element has a imixs:processid attribute. This
-     * attribute is added in the 'addExtesnion' method call
-     */
-    @Override
-    public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
+        /**
+         * This Extension is for BPMN Task Elements only
+         * <p>
+         * The method also verifies if the element has a imixs:processid attribute. This
+         * attribute is added in the 'addExtesnion' method call
+         */
+        @Override
+        public boolean handlesBPMNElement(final BPMNElement bpmnElement) {
 
-        if (bpmnElement instanceof Event) {
-            Event event = (Event) bpmnElement;
-            if (event.getType().equals(BPMNTypes.CATCH_EVENT)) {
-                if (event.hasAttribute(getNamespace() + ":activityid")) {
-                    return true;
+                if (bpmnElement instanceof Event) {
+                        Event event = (Event) bpmnElement;
+                        if (event.getType().equals(BPMNTypes.CATCH_EVENT)) {
+                                if (event.hasAttribute(getNamespace() + ":activityid")) {
+                                        return true;
+                                }
+                        }
                 }
-            }
+                return false;
         }
-        return false;
-    }
 
-    /**
-     * This Helper Method generates a JSON Object with the BPMNElement properties.
-     * <p>
-     * This json object is used on the GLSP Client to generate the EMF JsonForms
-     */
-    @Override
-    public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
-            final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
-
-        BPMNModel model = bpmnElement.getModel();
-        Element elementNode = bpmnElement.getElementNode();
-
-        /***********
-         * Data
+        /**
+         * This Helper Method generates a JSON Object with the BPMNElement properties.
+         * <p>
+         * This json object is used on the GLSP Client to generate the EMF JsonForms
          */
-        dataBuilder //
-                .addData("txtreportname", ImixsExtensionUtil.getItemValueString(model, elementNode, "txtreportname"))//
-                .addData("txtreportfilepath",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtreportfilepath")) //
-                .addData("txtreportoptions",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode, "txtreportoptions")) //
-                .addData("txtreporttarget",
-                        ImixsExtensionUtil.getItemValueString(model, elementNode,
-                                "txtreporttarget", "0"));
-        /***********
-         * Schema
-         */
-        String[] targetOptions = { "Attach to Workitem|0", "External|2" };
-        schemaBuilder //
-                .addProperty("txtreportname", "string",
-                        "Define an optional report definition. A report definition can be processed by a plugin or adapter class. ")//
-                .addProperty("txtreportfilepath", "string",
-                        "Optional path to store the report result.  ") //
-                .addProperty("txtreportoptions", "string", null) //
-                .addProperty("txtreporttarget", "string",
-                        "Target to store the report result object.", targetOptions);
+        @Override
+        public void buildPropertiesForm(final BPMNElement bpmnElement, final DataBuilder dataBuilder,
+                        final SchemaBuilder schemaBuilder, final UISchemaBuilder uiSchemaBuilder) {
 
-        /***********
-         * UISchema
-         */
-        Map<String, String> selectItemOption = new HashMap<>();
-        selectItemOption.put("format", "selectitem");
-        Map<String, String> multilineOption = new HashMap<>();
-        multilineOption.put("multi", "true");
-        uiSchemaBuilder //
-                .addCategory("Report") //
+                BPMNModel model = bpmnElement.getModel();
+                Element elementNode = bpmnElement.getElementNode();
 
-                .addLayout(Layout.VERTICAL) //
-                .addElement("txtreportname", "Report Name", null) //
-                .addElement("txtreportfilepath", "Filename", null) //
-                .addElement("txtreporttarget", "Target", selectItemOption) //
-                .addElement("txtreportoptions", "Options", multilineOption);
+                /***********
+                 * Data
+                 */
+                dataBuilder //
+                                .addData("txtreportname",
+                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                                                "txtreportname"))//
+                                .addData("txtreportfilepath",
+                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                                                "txtreportfilepath")) //
+                                .addData("txtreportoptions",
+                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                                                "txtreportoptions")) //
+                                .addData("txtreporttarget",
+                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                                                "txtreporttarget", "0"));
+                /***********
+                 * Schema
+                 */
+                String[] targetOptions = { "Attach to Workitem|0", "External|2" };
+                schemaBuilder //
+                                .addProperty("txtreportname", "string",
+                                                "Define an optional report definition. A report definition can be processed by a plugin or adapter class. ")//
+                                .addProperty("txtreportfilepath", "string",
+                                                "Optional path to store the report result.  ") //
+                                .addProperty("txtreportoptions", "string", null) //
+                                .addProperty("txtreporttarget", "string",
+                                                "Target to store the report result object.", targetOptions);
 
-    }
+                /***********
+                 * UISchema
+                 */
+                Map<String, String> selectItemOption = new HashMap<>();
+                selectItemOption.put("format", "selectitem");
+                Map<String, String> multilineOption = new HashMap<>();
+                multilineOption.put("multi", "true");
+                uiSchemaBuilder //
+                                .addCategory("Report") //
 
-    /**
-     * This method updates the BPMN properties and also the imixs processid.
-     * The processID is also updated for the frontend.
-     */
-    @Override
-    public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
-            final GModelElement gNodeElement) {
+                                .addLayout(Layout.VERTICAL) //
+                                .addElement("txtreportname", "Report Name", null) //
+                                .addElement("txtreportfilepath", "Filename", null) //
+                                .addElement("txtreporttarget", "Target", selectItemOption) //
+                                .addElement("txtreportoptions", "Options", multilineOption);
 
-        // we are only interested in category Workflow and History
-        if ("Report".equals(category)) {
-            BPMNModel model = bpmnElement.getModel();
-            Element elementNode = bpmnElement.getElementNode();
-
-            // Report
-            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
-                    json.getString("txtreportname", ""));
-            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportfilepath", "xs:string",
-                    json.getString("txtreportfilepath", ""));
-            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportoptions", "xs:string",
-                    json.getString("txtreportoptions", ""));
-            ImixsExtensionUtil.setItemValue(model, elementNode, "txtreporttarget", "xs:string",
-                    json.getString("txtreporttarget", ""));
         }
-        return false;
-    }
+
+        /**
+         * This method updates the BPMN properties and also the imixs processid.
+         * The processID is also updated for the frontend.
+         */
+        @Override
+        public boolean updatePropertiesData(final JsonObject json, final String category, final BPMNElement bpmnElement,
+                        final GModelElement gNodeElement) {
+
+                // we are only interested in category Workflow and History
+                if ("Report".equals(category)) {
+                        BPMNModel model = bpmnElement.getModel();
+                        Element elementNode = bpmnElement.getElementNode();
+
+                        // Report
+                        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportname", "xs:string",
+                                        json.getString("txtreportname", ""));
+                        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportfilepath", "xs:string",
+                                        json.getString("txtreportfilepath", ""));
+                        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreportoptions", "xs:string",
+                                        json.getString("txtreportoptions", ""));
+                        ImixsExtensionUtil.setItemValue(model, elementNode, "txtreporttarget", "xs:string",
+                                        json.getString("txtreporttarget", ""));
+                }
+                return false;
+        }
 
 }

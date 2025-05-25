@@ -38,7 +38,7 @@ import org.w3c.dom.Element;
  * @author rsoika
  *
  */
-public class ImixsBPMNTaskExtension extends ImixsBPMNExtension {
+public class ImixsBPMNTaskExtension extends ImixsBPMNElementExtension {
 
         public ImixsBPMNTaskExtension() {
                 super();
