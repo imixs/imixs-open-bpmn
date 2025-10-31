@@ -157,7 +157,7 @@ public class ImixsModelValidatorExtension implements BPMNModelExtension {
         if (!model.hasNamespace(ImixsExtensionUtil.getNamespace())) {
             return valid;
         }
-        Set<BPMNProcess> processList = model.getProcesses();
+        List<BPMNProcess> processList = model.getBpmnProcessList();
         for (BPMNProcess process : processList) {
             try {
                 process.init();

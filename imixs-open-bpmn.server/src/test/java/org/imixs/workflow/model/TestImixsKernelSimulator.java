@@ -43,13 +43,14 @@ public class TestImixsKernelSimulator {
         logger.info("...read model");
         BPMNModel model = BPMNModelFactory.read("/imixs-refmodel-1.bpmn");
 
-        assertEquals(1, model.getProcesses().size());
-        BPMNProcess process = model.openDefaultProces();
+        assertEquals(1, model.getBpmnProcesses().size());
+        BPMNProcess process = model.openDefaultProcess(); // .getDefaultProcess();
+        assertNotNull(process);
+        assertEquals("simple", process.getId());
 
         // fetch event case3
         Event event = (Event) process.findElementById("event_zLUTkA");
         assertNotNull(event);
-
         // processing simulation
         ImixsBPMNEventIterator eventIterator = new ImixsBPMNEventIterator(event);
         // we expect two process iterations
