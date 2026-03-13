@@ -70,11 +70,10 @@ public class ImixsBPMNValidator extends BPMNGLSPValidator {
             } catch (BPMNModelException e) {
                 logger.warning("Failed to validate : " + e.getMessage());
             }
+            markers.addAll(this.convertBPMNValidationMarkers(result));
+            logger.info("├── Finished Imixs batch validation in " + (System.currentTimeMillis() - l) + "ms...");
         }
 
-        markers.addAll(this.convertBPMNValidationMarkers(result));
-
-        logger.info("├── Finished Imixs batch validation in " + (System.currentTimeMillis() - l) + "ms...");
         return markers;
     }
 
