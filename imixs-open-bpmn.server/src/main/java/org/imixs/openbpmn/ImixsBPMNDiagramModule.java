@@ -17,6 +17,7 @@ package org.imixs.openbpmn;
 
 import java.util.logging.Logger;
 
+import org.eclipse.glsp.server.features.validation.ModelValidator;
 import org.imixs.openbpmn.extensions.ImixsBPMNDataObjectExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNDefinitionsExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNEventACLExtension;
@@ -29,6 +30,7 @@ import org.imixs.openbpmn.extensions.ImixsBPMNEventSchedulerExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskACLExtension;
 import org.imixs.openbpmn.extensions.ImixsBPMNTaskExtension;
 import org.imixs.openbpmn.extensions.ImixsModelValidatorExtension;
+import org.imixs.openbpmn.validators.ImixsBPMNValidator;
 import org.openbpmn.extensions.BPMNElementExtension;
 import org.openbpmn.extensions.BPMNModelExtension;
 import org.openbpmn.glsp.BPMNDiagramModule;
@@ -89,5 +91,13 @@ public class ImixsBPMNDiagramModule extends BPMNDiagramModule {
         // bind Imixs model extensions
         binding.addBinding().to(ImixsModelValidatorExtension.class);
 
+    }
+
+    /**
+     * Register Imixs custom validator
+     */
+    @Override
+    protected Class<? extends ModelValidator> bindModelValidator() {
+        return ImixsBPMNValidator.class;
     }
 }
