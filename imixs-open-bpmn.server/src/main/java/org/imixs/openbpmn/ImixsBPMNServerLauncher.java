@@ -24,6 +24,7 @@ import org.eclipse.glsp.server.launch.GLSPServerLauncher;
 import org.eclipse.glsp.server.launch.SocketGLSPServerLauncher;
 import org.eclipse.glsp.server.utils.LaunchUtil;
 import org.openbpmn.glsp.launch.BPMNServerLauncher;
+import org.openbpmn.glsp.launch.BPMNServerModule;
 
 public final class ImixsBPMNServerLauncher {
     private static Logger logger = Logger.getLogger(BPMNServerLauncher.class.getName());
@@ -42,7 +43,7 @@ public final class ImixsBPMNServerLauncher {
             LaunchUtil.configure(parser);
 
             int port = parser.parsePort();
-            ServerModule bpmnServerModule = new ServerModule()
+            ServerModule bpmnServerModule = new BPMNServerModule()
                     .configureDiagramModule(new ImixsBPMNDiagramModule());
 
             GLSPServerLauncher launcher = new SocketGLSPServerLauncher(bpmnServerModule);
