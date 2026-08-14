@@ -132,6 +132,9 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNElementExtension {
                                 .addData("nammailreceiverbcc", String.join(System.lineSeparator(),
                                                 ImixsExtensionUtil.getItemValueList(model, elementNode,
                                                                 "nammailreceiverbcc"))) //
+                                .addData("namMailFrom",
+                                                ImixsExtensionUtil.getItemValueString(model, elementNode,
+                                                                "namMailFrom")) //
                 ;
 
                 /***********
@@ -149,6 +152,7 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNElementExtension {
                                 .addProperty("nammailreceiver", "string", "Add multiple entries in separate lines.") //
                                 .addProperty("nammailreceivercc", "string", "Add multiple entries in separate lines.") //
                                 .addProperty("nammailreceiverbcc", "string", "Add multiple entries in separate lines.") //
+                                .addProperty("namMailFrom", "string", "Optional 'From' address") //
                 ;
 
                 /***********
@@ -179,6 +183,10 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNElementExtension {
                                 .addElement("nammailreceivercc", "Others", multilineOption) //
                                 .addElement("nammailreceiverbcc", "Others", multilineOption);
 
+                // from
+                uiSchemaBuilder //
+                                .addLayout(Layout.HORIZONTAL) //
+                                .addElement("namMailFrom", "From", null);
         }
 
         /**
@@ -235,6 +243,9 @@ public class ImixsBPMNEventMailExtension extends ImixsBPMNElementExtension {
                                 ImixsExtensionUtil.setItemValueList(model, elementNode, property, "xs:string",
                                                 Arrays.asList(lines), null);
                         }
+
+                        ImixsExtensionUtil.setItemValue(model, elementNode, "namMailFrom", "xs:string",
+                                        json.getString("namMailFrom", ""));
                 }
                 return false;
 
