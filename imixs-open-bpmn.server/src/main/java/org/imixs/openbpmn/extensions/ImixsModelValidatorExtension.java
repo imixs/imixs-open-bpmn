@@ -28,7 +28,6 @@ import org.openbpmn.bpmn.ModelNotification;
 import org.openbpmn.bpmn.elements.BPMNProcess;
 import org.openbpmn.bpmn.elements.DataObject;
 import org.openbpmn.bpmn.elements.core.BPMNElementNode;
-import org.openbpmn.bpmn.exceptions.BPMNModelException;
 import org.openbpmn.extensions.BPMNModelExtension;
 import org.openbpmn.extensions.model.FileLinkExtension;
 import org.w3c.dom.Element;
@@ -159,56 +158,56 @@ public class ImixsModelValidatorExtension implements BPMNModelExtension {
         }
         List<BPMNProcess> processList = model.getBpmnProcessList();
         for (BPMNProcess process : processList) {
-            try {
-                process.init();
-                Set<DataObject> objects = process.getDataObjects();
-                for (DataObject dataObject : objects) {
-                    if (dataObject.hasExtensionAttribute(ImixsExtensionUtil.getNamespace(),
-                            ImixsBPMNDataObjectExtension.IMIXS_DATATYPE)) {
-                        // do not validate
+            // try {
+            // process.init();
+            Set<DataObject> objects = process.getDataObjects();
+            for (DataObject dataObject : objects) {
+                if (dataObject.hasExtensionAttribute(ImixsExtensionUtil.getNamespace(),
+                        ImixsBPMNDataObjectExtension.IMIXS_DATATYPE)) {
+                    // do not validate
+                    continue;
+                }
+                // compute data type...
+                String oldDataType = dataObject.getExtensionAttribute(ImixsExtensionUtil.getNamespace(),
+                        ImixsBPMNDataObjectExtension.IMIXS_DATATYPE);
+                String dataType = "";
+                Element element = dataObject.getChildNode(BPMNNS.BPMN2, "documentation");
+                String data;
+                try {
+                    data = FileLinkExtension.readFileContent(element, path);
+                    if (data == null) {
+                        // no external file data - so we try real content
+                        data = dataObject.getDocumentation();
+                    }
+                    if (data == null || data.isEmpty()) {
                         continue;
                     }
-                    // compute data type...
-                    String oldDataType = dataObject.getExtensionAttribute(ImixsExtensionUtil.getNamespace(),
-                            ImixsBPMNDataObjectExtension.IMIXS_DATATYPE);
-                    String dataType = "";
-                    Element element = dataObject.getChildNode(BPMNNS.BPMN2, "documentation");
-                    String data;
-                    try {
-                        data = FileLinkExtension.readFileContent(element, path);
-                        if (data == null) {
-                            // no external file data - so we try real content
-                            data = dataObject.getDocumentation();
-                        }
-                        if (data == null || data.isEmpty()) {
-                            continue;
-                        }
-                        if (data.contains("<imixs-form")) {
-                            dataType = ImixsBPMNDataObjectExtension.IMIXS_DATATYPE_FORM;
-                        }
-                        if (data.contains("<PromptDefinition")) {
-                            dataType = ImixsBPMNDataObjectExtension.IMIXS_DATATYPE_AI;
-                        }
-                        if (!dataType.isEmpty()) {
-                            dataObject.setExtensionAttribute(ImixsExtensionUtil.getNamespace(),
-                                    ImixsBPMNDataObjectExtension.IMIXS_DATATYPE, dataType);
-                        } else {
-                            // remove deprecated type
-                            dataObject.removeExtensionAttribute(ImixsExtensionUtil.getNamespace(),
-                                    ImixsBPMNDataObjectExtension.IMIXS_DATATYPE);
-                        }
-                        // If data type changed, set flag
-                        if (!dataType.equals(oldDataType)) {
-                            valid = false;
-                        }
-                    } catch (IOException e) {
-                        logger.fine("Failed to validate extenral file data");
+                    if (data.contains("<imixs-form")) {
+                        dataType = ImixsBPMNDataObjectExtension.IMIXS_DATATYPE_FORM;
                     }
-
+                    if (data.contains("<PromptDefinition")) {
+                        dataType = ImixsBPMNDataObjectExtension.IMIXS_DATATYPE_AI;
+                    }
+                    if (!dataType.isEmpty()) {
+                        dataObject.setExtensionAttribute(ImixsExtensionUtil.getNamespace(),
+                                ImixsBPMNDataObjectExtension.IMIXS_DATATYPE, dataType);
+                    } else {
+                        // remove deprecated type
+                        dataObject.removeExtensionAttribute(ImixsExtensionUtil.getNamespace(),
+                                ImixsBPMNDataObjectExtension.IMIXS_DATATYPE);
+                    }
+                    // If data type changed, set flag
+                    if (!dataType.equals(oldDataType)) {
+                        valid = false;
+                    }
+                } catch (IOException e) {
+                    logger.fine("Failed to validate extenral file data");
                 }
-            } catch (BPMNModelException e) {
-                logger.warning("Failed to open process: " + e.getMessage());
+
             }
+            // } catch (BPMNModelException e) {
+            // logger.warning("Failed to open process: " + e.getMessage());
+            // }
 
         }
         return valid;

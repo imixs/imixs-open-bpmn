@@ -90,7 +90,7 @@ public class ImixsBPMNValidator extends BPMNGLSPValidator {
             throws BPMNModelException {
         List<BPMNValidationMarker> result = new ArrayList<>();
         // make sure that the process is initialized
-        process.init();
+        // process.init();
 
         // first we collect all Tasks
         Set<Activity> tasks = process.getActivities();
